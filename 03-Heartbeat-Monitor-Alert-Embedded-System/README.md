@@ -106,13 +106,15 @@ The project demonstrates the basic embedded architecture behind systems that acq
 
 # 🧠 Embedded Concepts Used
 
-### 1. Microcontroller Programming
+## 1. Microcontroller Programming
 
 The Arduino UNO acts as the central processing unit of the system.
 
 It reads the input signal, processes the data, calculates BPM, evaluates the system state, and controls the output devices.
 
-### 2. Analog Signal Acquisition
+---
+
+## 2. Analog Signal Acquisition
 
 The synthetic pulse signal is connected to Arduino analog pin `A0`.
 
@@ -126,7 +128,9 @@ The signal is read using:
 analogRead(SENSOR_PIN);
 ```
 
-### 3. Synthetic Pulse Generation
+---
+
+## 3. Synthetic Pulse Generation
 
 The potentiometer controls the simulated pulse period.
 
@@ -142,7 +146,9 @@ The implementation maps the potentiometer position approximately as follows:
 
 This allows different heart-rate conditions to be demonstrated without requiring physical sensor hardware.
 
-### 4. Moving-Average Filtering
+---
+
+## 4. Moving-Average Filtering
 
 The project uses a moving-average filter to smooth the generated signal.
 
@@ -152,7 +158,9 @@ const int FILTER_SIZE = 5;
 
 Five signal samples are maintained and averaged before peak detection.
 
-### 5. Peak Detection
+---
+
+## 5. Peak Detection
 
 A heartbeat is detected when the filtered signal crosses the sensor threshold.
 
@@ -168,7 +176,9 @@ const int RESET_THRESHOLD = 500;
 
 The signal must fall below the reset threshold before another peak can be detected. This provides basic hysteresis for the peak-detection process.
 
-### 6. Inter-Beat Interval Measurement
+---
+
+## 6. Inter-Beat Interval Measurement
 
 The system measures the time between consecutive detected pulse peaks.
 
@@ -236,71 +246,69 @@ for the simulation.
 # 🏗️ Architecture
 
 ```text
-                   ┌─────────────────────────┐
-                   │      POTENTIOMETER      │
-                   │ Synthetic Pulse Input   │
-                   └────────────┬────────────┘
-                                │
-                                ▼
-                         ┌─────────────────┐
-                         │ Arduino UNO A0  │
-                         │  Analog Input   │
-                         └────────┬────────┘
+                    ┌─────────────────────────┐
+                    │      POTENTIOMETER      │
+                    │ Synthetic Pulse Input   │
+                    └────────────┬────────────┘
+                                 │
+                                 ▼
+                          ┌─────────────────┐
+                          │ Arduino UNO A0  │
+                          │  Analog Input   │
+                          └────────┬────────┘
+                                   │
+                                   ▼
+                      ┌────────────────────────┐
+                      │ Synthetic Pulse        │
+                      │ Generation             │
+                      └───────────┬────────────┘
                                   │
                                   ▼
-                     ┌────────────────────────┐
-                     │ Synthetic Pulse        │
-                     │ Generation             │
-                     └───────────┬────────────┘
-                                 │
-                                 ▼
-                     ┌────────────────────────┐
-                     │ Moving Average Filter  │
-                     └───────────┬────────────┘
-                                 │
-                                 ▼
-                     ┌────────────────────────┐
-                     │ Peak Detection         │
-                     └───────────┬────────────┘
-                                 │
-                                 ▼
-                     ┌────────────────────────┐
-                     │ IBI Measurement        │
-                     └───────────┬────────────┘
-                                 │
-                                 ▼
-                     ┌────────────────────────┐
-                     │ BPM Calculation        │
-                     └───────────┬────────────┘
-                                 │
-                                 ▼
-                     ┌────────────────────────┐
-                     │ State Evaluation       │
-                     └───────────┬────────────┘
-                                 │
-                    ┌────────────┼────────────┐
-                    │            │            │
-                    ▼            ▼            ▼
-                 NORMAL         LOW          HIGH
-                               ALARM         ALARM
-                    │            │            │
-                    ▼            ▼            ▼
-                Green LED     Red LED       Red LED
-                               + Buzzer      + Buzzer
-
-                                 │
-                                 ▼
-                       ┌──────────────────┐
-                       │   16×2 I2C LCD   │
-                       │   BPM + Status   │
-                       └──────────────────┘
-
-                                 │
-                                 ▼
-                       ┌──────────────────┐
-                       │  Serial Monitor  │
-                       │  Real-Time Data  │
-                       └──────────────────┘
+                      ┌────────────────────────┐
+                      │ Moving Average Filter  │
+                      └───────────┬────────────┘
+                                  │
+                                  ▼
+                      ┌────────────────────────┐
+                      │ Peak Detection         │
+                      └───────────┬────────────┘
+                                  │
+                                  ▼
+                      ┌────────────────────────┐
+                      │ IBI Measurement        │
+                      └───────────┬────────────┘
+                                  │
+                                  ▼
+                      ┌────────────────────────┐
+                      │ BPM Calculation        │
+                      └───────────┬────────────┘
+                                  │
+                                  ▼
+                      ┌────────────────────────┐
+                      │ State Evaluation       │
+                      └───────────┬────────────┘
+                                  │
+                       ┌──────────┼──────────┐
+                       │          │          │
+                       ▼          ▼          ▼
+                    NORMAL       LOW        HIGH
+                                ALARM      ALARM
+                       │          │          │
+                       ▼          ▼          ▼
+                   Green LED   Red LED    Red LED
+                                + Buzzer   + Buzzer
+                                  │
+                                  ▼
+                         ┌──────────────────┐
+                         │   16×2 I2C LCD   │
+                         │   BPM + Status   │
+                         └──────────────────┘
+                                  │
+                                  ▼
+                         ┌──────────────────┐
+                         │  Serial Monitor  │
+                         │  Real-Time Data  │
+                         └──────────────────┘
 ```
 
 ---
@@ -339,14 +347,14 @@ The classification is:
 ```text
               BPM
                │
-         ┌─────┼─────┐
-         │     │     │
-         ▼     ▼     ▼
-       < 60  60–100  >100
-         │     │     │
-         ▼     ▼     ▼
-        LOW  NORMAL  HIGH
-       ALARM          ALARM
+          ┌────┼────┐
+          │    │    │
+          ▼    ▼    ▼
+        < 60  60–100  >100
+          │    │    │
+          ▼    ▼    ▼
+         LOW NORMAL HIGH
+        ALARM        ALARM
 ```
 
 | BPM Range     | State      | Green LED | Red LED       | Buzzer |
@@ -359,23 +367,31 @@ The classification is:
 
 # 📁 Folder Structure
 
+The repository follows the actual GitHub project structure:
+
 ```text
 03-Heartbeat-Monitor-Alert-Embedded-System/
 │
-├── sketch/
-│   └── sketch.ino
-│
-├── wokwi/
-│   ├── diagram.json
-│   └── libraries.txt
-│
-├── screenshots/
-│   ├── normal.png
+├── Output/
+│   ├── high-alert.png
 │   ├── low-alert.png
-│   └── high-alert.png
+│   └── normal.png
 │
-└── README.md
+├── README.md
+├── diagram.json
+├── libraries.txt
+└── sketch.ino
 ```
+
+### File Description
+
+| File / Folder   | Purpose                                 |
+| --------------- | --------------------------------------- |
+| `sketch.ino`    | Main Arduino Embedded C/C++ source code |
+| `diagram.json`  | Wokwi circuit configuration             |
+| `libraries.txt` | Required Wokwi library configuration    |
+| `Output/`       | Simulation output screenshots           |
+| `README.md`     | Project documentation                   |
 
 ---
 
@@ -395,60 +411,28 @@ No physical hardware is required for the current simulation.
 The project uses the **LiquidCrystal I2C** library, with the library configuration provided through:
 
 ```text
-wokwi/libraries.txt
+libraries.txt
 ```
 
 ---
 
 # ▶️ Simulation Steps
 
-### Step 1 — Open the Wokwi Project
+## Step 1 — Open the Wokwi Project
 
 Open the Wokwi project:
 
-```text
 https://wokwi.com/projects/472334564347172865
-```
 
-### Step 2 — Add the Source Code
+## Step 2 — Start the Simulation
 
-Use:
-
-```text
-sketch/sketch.ino
-```
-
-### Step 3 — Configure the Circuit
-
-Use:
-
-```text
-wokwi/diagram.json
-```
-
-### Step 4 — Add the Library
-
-The project uses:
-
-```text
-LiquidCrystal I2C
-```
-
-The library configuration is provided through:
-
-```text
-wokwi/libraries.txt
-```
-
-### Step 5 — Start Simulation
-
-Click:
+Open the project and click:
 
 ```text
 Start Simulation
 ```
 
-### Step 6 — Observe the LCD
+## Step 3 — Observe the LCD
 
 The startup screen displays:
 
@@ -459,7 +443,7 @@ INITIALIZING...
 
 After initialization, the LCD displays the BPM and system status.
 
-### Step 7 — Adjust the Potentiometer
+## Step 4 — Adjust the Potentiometer
 
 Rotate the potentiometer to change the simulated pulse period.
 
@@ -473,13 +457,31 @@ HIGH ALARM
 
 conditions.
 
-### Step 8 — Observe LEDs and Buzzer
+## Step 5 — Observe the LEDs and Buzzer
 
-The outputs change according to the calculated BPM.
+The output devices change according to the calculated BPM.
 
-### Step 9 — Open Serial Monitor
+### Normal Condition
 
-Observe:
+* Green LED → ON
+* Red LED → OFF
+* Buzzer → OFF
+
+### Low Alarm
+
+* Green LED → OFF
+* Red LED → Blinking
+* Buzzer → ON
+
+### High Alarm
+
+* Green LED → OFF
+* Red LED → Fast Blinking
+* Buzzer → ON
+
+## Step 6 — Open Serial Monitor
+
+Observe real-time telemetry such as:
 
 ```text
 RAW_ADC
@@ -498,29 +500,34 @@ The project is primarily designed for **Wokwi simulation**.
 ### Wokwi
 
 1. Open the Wokwi project.
-2. Load `sketch.ino`.
-3. Load the circuit configuration from `diagram.json`.
-4. Ensure `LiquidCrystal I2C` is included.
-5. Start the simulation.
-6. Adjust the potentiometer.
-7. Observe BPM on the LCD.
-8. Observe the LEDs.
-9. Observe the buzzer during alarm conditions.
-10. Open the Serial Monitor.
+2. Start the simulation.
+3. Adjust the potentiometer.
+4. Observe the BPM on the LCD.
+5. Observe the system status.
+6. Observe the green and red LEDs.
+7. Observe the buzzer during alarm conditions.
+8. Open the Serial Monitor.
+9. Observe the real-time signal-processing values.
+
+The repository also contains the complete source and circuit configuration:
+
+```text
+sketch.ino
+diagram.json
+libraries.txt
+```
 
 ---
 
-# 📸 Screenshots
+# 📸 Simulation Outputs
 
-The repository should contain screenshots demonstrating the three major operating conditions.
+The repository contains screenshots demonstrating the three major operating conditions.
 
 ## 1. Normal Heart Rate
 
-File:
+**Simulation Output:**
 
-```text
-screenshots/normal.png
-```
+![Normal Heart Rate](Output/normal.png)
 
 Expected behavior:
 
@@ -531,13 +538,13 @@ Buzzer    → OFF
 LCD       → STATUS: NORMAL
 ```
 
+---
+
 ## 2. Low Heart Rate Alarm
 
-File:
+**Simulation Output:**
 
-```text
-screenshots/low-alert.png
-```
+![Low Heart Rate Alarm](Output/low-alert.png)
 
 Expected behavior:
 
@@ -548,13 +555,13 @@ Buzzer    → ON
 LCD       → STATUS: LOW
 ```
 
+---
+
 ## 3. High Heart Rate Alarm
 
-File:
+**Simulation Output:**
 
-```text
-screenshots/high-alert.png
-```
+![High Heart Rate Alarm](Output/high-alert.png)
 
 Expected behavior:
 
@@ -595,6 +602,8 @@ IBI_MS:725 | BPM:82 | STATE:NORMAL
 IBI_MS:853 | BPM:70 | STATE:NORMAL
 ```
 
+---
+
 ## Test Case 2 — Low Alarm
 
 ### Condition
@@ -619,6 +628,8 @@ IBI_MS:1024 | BPM:58 | STATE:ALARM_LOW
 IBI_MS:1049 | BPM:57 | STATE:ALARM_LOW
 IBI_MS:1203 | BPM:49 | STATE:ALARM_LOW
 ```
+
+---
 
 ## Test Case 3 — High Alarm
 
@@ -645,7 +656,9 @@ IBI_MS:501 | BPM:119 | STATE:ALARM_HIGH
 IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 ```
 
-### Test Summary
+---
+
+## Test Summary
 
 | Test Case  | BPM Condition | LCD    | Green LED | Red LED       | Buzzer |
 | ---------- | ------------- | ------ | --------- | ------------- | ------ |
@@ -670,8 +683,8 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
    The current implementation uses:
 
    ```text
-   Low Alarm → <60 BPM
-   Normal    → 60–100 BPM
+   Low Alarm  → <60 BPM
+   Normal     → 60–100 BPM
    High Alarm → >100 BPM
    ```
 
@@ -696,7 +709,7 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 
 # 🚀 Future Improvements
 
-### Hardware Improvements
+## Hardware Improvements
 
 * Integrate a real pulse sensor
 * Integrate a PPG sensor
@@ -706,7 +719,7 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 * Add rechargeable battery support
 * Develop a wearable hardware prototype
 
-### Signal Processing Improvements
+## Signal Processing Improvements
 
 * Advanced digital filtering
 * Adaptive thresholding
@@ -716,7 +729,7 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 * Heart-rate variability analysis
 * More robust signal-quality assessment
 
-### Connectivity Improvements
+## Connectivity Improvements
 
 * ESP32 Wi-Fi connectivity
 * Bluetooth communication
@@ -725,7 +738,7 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 * Web dashboard
 * Remote alert notifications
 
-### Data Management
+## Data Management
 
 * Historical BPM logging
 * SD card storage
@@ -733,7 +746,7 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 * Real-time graphs
 * Long-term monitoring
 
-### System Improvements
+## System Improvements
 
 * User-specific configuration
 * Configurable thresholds
@@ -788,3 +801,5 @@ This project provides practical experience in:
 * Data Science
 * Computer Science
 * Research and Development
+
+---
