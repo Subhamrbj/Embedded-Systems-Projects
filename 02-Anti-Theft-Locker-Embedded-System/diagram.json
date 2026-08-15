@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "author": "Subham Bhattacherjee",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 120, "left": 120, "attrs": {} },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "keypad",
+      "top": -120,
+      "left": -220,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd",
+      "top": -120,
+      "left": 200,
+      "attrs": { "pins": "i2c" }
+    },
+    {
+      "type": "wokwi-servo",
+      "id": "servo",
+      "top": 200,
+      "left": 450,
+      "attrs": {}
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 350,
+      "left": 300,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_green",
+      "top": 120,
+      "left": 380,
+      "attrs": { "color": "green", "label": "ACCESS GRANTED" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_red",
+      "top": 200,
+      "left": 380,
+      "attrs": { "color": "red", "label": "ACCESS DENIED" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 160,
+      "left": 380,
+      "attrs": { "value": "220" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 240,
+      "left": 380,
+      "attrs": { "value": "220" }
+    }
+  ],
+  "connections": [
+    [ "keypad:R1", "uno:9", "green", [] ],
+    [ "keypad:R2", "uno:8", "green", [] ],
+    [ "keypad:R3", "uno:7", "green", [] ],
+    [ "keypad:R4", "uno:6", "green", [] ],
+    [ "keypad:C1", "uno:5", "blue", [] ],
+    [ "keypad:C2", "uno:4", "blue", [] ],
+    [ "keypad:C3", "uno:3", "blue", [] ],
+    [ "keypad:C4", "uno:2", "blue", [] ],
+
+    [ "lcd:VCC", "uno:5V", "red", [] ],
+    [ "lcd:GND", "uno:GND.1", "black", [] ],
+    [ "lcd:SDA", "uno:A4", "blue", [] ],
+    [ "lcd:SCL", "uno:A5", "yellow", [] ],
+
+    [ "servo:V+0", "uno:5V", "red", [] ],
+    [ "servo:GND", "uno:GND.1", "black", [] ],
+    [ "servo:PWM", "uno:10", "orange", [] ],
+
+    [ "buzzer:1", "uno:11", "purple", [] ],
+    [ "buzzer:2", "uno:GND.2", "black", [] ],
+
+    [ "led_green:A", "uno:12", "green", [] ],
+    [ "led_green:C", "r1:1", "green", [] ],
+    [ "r1:2", "uno:GND.2", "black", [] ],
+
+    [ "led_red:A", "uno:13", "red", [] ],
+    [ "led_red:C", "r2:1", "red", [] ],
+    [ "r2:2", "uno:GND.2", "black", [] ]
+  ],
+  "serialMonitor": { "display": "always" },
+  "dependencies": {}
+}
