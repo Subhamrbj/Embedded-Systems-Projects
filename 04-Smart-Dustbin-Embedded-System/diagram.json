@@ -1,0 +1,74 @@
+{
+  "version": 1,
+  "author": "Subham Bhattacherjee",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 120, "left": 120, "attrs": {} },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic_hand",
+      "top": -120,
+      "left": -180,
+      "attrs": { "distance": "100" }
+    },
+    {
+      "type": "wokwi-hc-sr04",
+      "id": "ultrasonic_bin",
+      "top": -120,
+      "left": 120,
+      "attrs": { "distance": "30" }
+    },
+    { "type": "wokwi-servo", "id": "servo", "top": -117.2, "left": 422.4, "attrs": {} },
+    { "type": "wokwi-lcd1602", "id": "lcd", "top": 320, "left": 120, "attrs": { "pins": "i2c" } },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 320,
+      "left": 450,
+      "attrs": { "volume": "0.1" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_green",
+      "top": 120,
+      "left": 480,
+      "attrs": { "color": "green", "label": "NORMAL" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led_red",
+      "top": 200,
+      "left": 480,
+      "attrs": { "color": "red", "label": "FULL ALARM" }
+    },
+    { "type": "wokwi-resistor", "id": "r1", "top": 160, "left": 480, "attrs": { "value": "220" } },
+    { "type": "wokwi-resistor", "id": "r2", "top": 240, "left": 480, "attrs": { "value": "220" } }
+  ],
+  "connections": [
+    [ "ultrasonic_hand:VCC", "uno:5V", "red", [] ],
+    [ "ultrasonic_hand:GND", "uno:GND.1", "black", [] ],
+    [ "ultrasonic_hand:TRIG", "uno:7", "yellow", [] ],
+    [ "ultrasonic_hand:ECHO", "uno:6", "green", [] ],
+    [ "ultrasonic_bin:VCC", "uno:5V", "red", [] ],
+    [ "ultrasonic_bin:GND", "uno:GND.1", "black", [] ],
+    [ "ultrasonic_bin:TRIG", "uno:5", "orange", [] ],
+    [ "ultrasonic_bin:ECHO", "uno:4", "blue", [] ],
+    [ "servo:V+", "uno:5V", "red", [] ],
+    [ "servo:GND", "uno:GND.1", "black", [] ],
+    [ "servo:PWM", "uno:9", "orange", [] ],
+    [ "lcd:VCC", "uno:5V", "red", [] ],
+    [ "lcd:GND", "uno:GND.1", "black", [] ],
+    [ "lcd:SDA", "uno:A4", "blue", [] ],
+    [ "lcd:SCL", "uno:A5", "yellow", [] ],
+    [ "buzzer:1", "uno:10", "purple", [] ],
+    [ "buzzer:2", "uno:GND.2", "black", [] ],
+    [ "led_green:A", "uno:12", "green", [] ],
+    [ "led_green:C", "r1:1", "green", [] ],
+    [ "r1:2", "uno:GND.2", "black", [] ],
+    [ "led_red:A", "uno:13", "red", [] ],
+    [ "led_red:C", "r2:1", "red", [] ],
+    [ "r2:2", "uno:GND.2", "black", [] ]
+  ],
+  "serialMonitor": { "display": "always" },
+  "dependencies": {}
+}
