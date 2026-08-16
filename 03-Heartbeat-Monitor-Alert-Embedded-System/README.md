@@ -584,6 +584,7 @@ This project is licensed under the **MIT License** — free to use, modify, and 
 **Subham Bhattacherjee**
 M.Tech Computer Science & Engineering — Kalyani University
 
-**Areas of Interest:** Embedded Systems · Artificial Intelligence · Machine Learning · Data Science · Research and Development
+**Areas of Interest:** Embedded Systems · Artificial Intelligence · Machine Learning · Research and Development
 
-Simulation: https://wokwi.com/projects/472334564347172865
+**GitHub:** [View Repository](https://github.com/Subhamrbj/Embedded-Systems-Projects/tree/main/03-Heartbeat-Monitor-Alert-Embedded-System)
+**Simulation:** https://wokwi.com/projects/472334564347172865
