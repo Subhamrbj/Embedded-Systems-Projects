@@ -395,46 +395,38 @@ printSystemStatus()
 ## 📸 Screenshots
 
 ### Initial Running State
-![Initial Running State](Screenshots/01_Running.png)
+![Initial Running State](Output/01_Running.png)
 
 ### Password Entry & Masking
-![Password Entry](Screenshots/02_Password_Enter.png)
+![Password Entry](Output/02_Password_Enter.png)
 
 ### Successful Authentication
-![Successful Authentication](Screenshots/03_Test-1.png)
+![Successful Authentication](Output/03_Test-1.png)
 
 ### Failed Authentication
-![Failed Authentication](Screenshots/04_Test-2.png)
+![Failed Authentication](Output/04_Test-2.png)
 
 ### Security Lockout
-![Security Lockout](Screenshots/05_Test-3.png)
+![Security Lockout](Output/05_Test-3.png)
 
 ---
 
 ## 📁 Repository Structure
 
 ```text
-Anti-Theft-Locker-Embedded-System/
+02-Anti-Theft-Locker-Embedded-System/
+│
+├── Output/
+│   ├── 01_Running.png
+│   ├── 02_Password_Enter.png
+│   ├── 03_Test-1.png
+│   ├── 04_Test-2.png
+│   └── 05_Test-3.png
 │
 ├── README.md
-├── LICENSE
-│
-├── arduino_code/
-│   └── locker_system.ino
-│
-├── circuit_diagram/
-│   └── pin_mapping.md
-│
-├── simulation/
-│   ├── diagram.json
-│   └── libraries.txt
-│
-└── Screenshots/
-    ├── 01_Running.png
-    ├── 02_Password_Enter.png
-    ├── 03_Test-1.png
-    ├── 04_Test-2.png
-    └── 05_Test-3.png
+├── diagram.json
+├── libraries.txt
+└── sketch.ino
 ```
 
 ---
