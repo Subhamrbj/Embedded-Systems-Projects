@@ -12,6 +12,31 @@ An Arduino-based **automatic waste bin controller** that opens its lid touch-fre
 
 ---
 
+## 📑 Table of Contents
+
+1. [Overview](#-overview)
+2. [Problem Statement](#-problem-statement)
+3. [Industry Relevance](#-industry-relevance)
+4. [Features](#-features)
+5. [Components Used](#-components-used)
+6. [Embedded Concepts Used](#-embedded-concepts-used)
+7. [Architecture](#️-architecture)
+8. [Circuit Connections](#-circuit-connections)
+9. [Folder Structure](#-folder-structure)
+10. [Installation](#️-installation)
+11. [Simulation Steps (Wokwi)](#️-simulation-steps-wokwi)
+12. [How to Run](#-how-to-run)
+13. [Bin-Level Formula](#-bin-level-formula)
+14. [Screenshots](#-screenshots)
+15. [Test Results](#-test-results)
+16. [Known Limitations](#️-known-limitations)
+17. [License](#-license)
+18. [Future Improvements](#-future-improvements)
+19. [Learning Outcomes](#-learning-outcomes)
+20. [Author](#-author)
+
+---
+
 ## 📖 Overview
 
 Public and industrial dustbins are usually opened by hand, which spreads germs and leads to bins overflowing unnoticed until someone manually checks them. This project solves both problems with a single low-cost embedded controller built around an Arduino Uno:
@@ -245,5 +270,5 @@ This project is licensed under the **MIT License** — free to use, modify, and 
 ## 👤 Author
 
 **Subham Bhattacherjee**
-Repository: [`Embedded-Systems-Projects`](https://github.com/Subhamrbj/Embedded-Systems-Projects) → `04-Smart-Dustbin-Embedded-System`
-Simulation: https://wokwi.com/projects/472357743514021889
+**GitHub:** [View Repository](https://github.com/Subhamrbj/Embedded-Systems-Projects/tree/main/04-Smart-Dustbin-Embedded-System)
+**Simulation:** https://wokwi.com/projects/472357743514021889
