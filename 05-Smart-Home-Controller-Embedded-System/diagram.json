@@ -1,0 +1,115 @@
+{
+  "version": 1,
+  "author": "Subham Bhattacherjee",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-esp32-devkit-v1", "id": "esp", "top": 20, "left": 20, "attrs": {} },
+    {
+      "type": "wokwi-dht22",
+      "id": "dht",
+      "top": 20,
+      "left": 300,
+      "attrs": { "temperature": "27", "humidity": "55" }
+    },
+    { "type": "wokwi-pir-motion-sensor", "id": "pir", "top": 148, "left": 299.82, "attrs": {} },
+    { "type": "wokwi-photoresistor-sensor", "id": "ldr", "top": 280, "left": 300, "attrs": {} },
+    {
+      "type": "wokwi-oled",
+      "id": "oled",
+      "top": 20,
+      "left": 500,
+      "attrs": { "i2cAddress": "0x3C" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "roomLight",
+      "top": 400,
+      "left": 500,
+      "attrs": { "color": "yellow", "label": "ROOM LIGHT" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "fan",
+      "top": 450,
+      "left": 500,
+      "attrs": { "color": "blue", "label": "FAN" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "securityLed",
+      "top": 500,
+      "left": 500,
+      "attrs": { "color": "red", "label": "SECURITY ALERT" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "safeLed",
+      "top": 550,
+      "left": 500,
+      "attrs": { "color": "green", "label": "SYSTEM SAFE" }
+    },
+    {
+      "type": "wokwi-buzzer",
+      "id": "buzzer",
+      "top": 350,
+      "left": 650,
+      "attrs": { "volume": "0.2" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "lightButton",
+      "top": 400,
+      "left": 750,
+      "attrs": { "color": "yellow", "label": "MANUAL LIGHT" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "fanButton",
+      "top": 460,
+      "left": 750,
+      "attrs": { "color": "blue", "label": "MANUAL FAN" }
+    },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "securityButton",
+      "top": 520,
+      "left": 750,
+      "attrs": { "color": "red", "label": "SECURITY" }
+    }
+  ],
+  "connections": [
+    [ "dht:VCC", "esp:3V3", "red", [] ],
+    [ "dht:SDA", "esp:D4", "green", [] ],
+    [ "dht:GND", "esp:GND.1", "black", [] ],
+    [ "pir:VCC", "esp:3V3", "red", [] ],
+    [ "pir:OUT", "esp:D27", "green", [] ],
+    [ "pir:GND", "esp:GND.1", "black", [] ],
+    [ "ldr:VCC", "esp:3V3", "red", [] ],
+    [ "ldr:GND", "esp:GND.1", "black", [] ],
+    [ "ldr:AO", "esp:D34", "green", [] ],
+    [ "oled:VCC", "esp:3V3", "red", [] ],
+    [ "oled:GND", "esp:GND.1", "black", [] ],
+    [ "oled:SDA", "esp:D21", "green", [] ],
+    [ "oled:SCL", "esp:D22", "green", [] ],
+    [ "roomLight:A", "esp:D18", "green", [] ],
+    [ "roomLight:C", "esp:GND.2", "black", [] ],
+    [ "fan:A", "esp:D19", "green", [] ],
+    [ "fan:C", "esp:GND.2", "black", [] ],
+    [ "securityLed:A", "esp:D25", "green", [] ],
+    [ "securityLed:C", "esp:GND.2", "black", [] ],
+    [ "safeLed:A", "esp:D26", "green", [] ],
+    [ "safeLed:C", "esp:GND.2", "black", [] ],
+    [ "buzzer:1", "esp:D23", "green", [] ],
+    [ "buzzer:2", "esp:GND.2", "black", [] ],
+    [ "lightButton:1.l", "esp:D32", "green", [] ],
+    [ "lightButton:2.l", "esp:GND.2", "black", [] ],
+    [ "fanButton:1.l", "esp:D33", "green", [] ],
+    [ "fanButton:2.l", "esp:GND.2", "black", [] ],
+    [ "securityButton:1.l", "esp:D14", "green", [] ],
+    [ "securityButton:2.l", "esp:GND.2", "black", [] ],
+    [ "esp:TX0", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX0", "$serialMonitor:TX", "", [] ]
+  ],
+  "serialMonitor": { "collapse": false, "convertEol": false, "display": "always", "newline": "lf" },
+  "dependencies": {}
+}
