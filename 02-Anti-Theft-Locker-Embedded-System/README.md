@@ -15,13 +15,13 @@
 
 > An Arduino UNO-based electronic access-control system built around a clean three-state Finite State Machine: PIN authentication via 4×4 keypad, masked LCD input, SG90 servo locking, non-blocking automatic relocking, three-strike failed-attempt detection, and a timed security lockout with alarm — the same control pattern found in real electronic door locks and safe mechanisms.
 
-**🔗 [Live Wokwi Simulation](https://wokwi.com/projects/472327786263779329) &nbsp;|&nbsp; 📄 [sketch.ino](#) &nbsp;|&nbsp; 🖼️ [Screenshots](#-screenshots)**
+**📄 [sketch.ino](sketch.ino) &nbsp;|&nbsp; 🖼️ [Output](#-output)**
 
 ---
 
 ## 💼 Why This Project Matters
 
-This project is a clean demonstration of **state-machine-driven embedded design** — one of the most transferable skills in firmware engineering. Rather than a tangle of flags and `if` statements, the system is built around three explicit states (`LOCKED`, `UNLOCKED`, `LOCKOUT`), each with clearly owned responsibilities, non-blocking `millis()`-based timing for the relock and lockout windows, and a deliberate security response to repeated failed authentication. It also shows security-mindedness beyond the code itself: the README includes an honest section on what a real production version would still need — which is exactly the kind of judgment that separates a working demo from an engineer who understands the domain.
+This project is a clean demonstration of **state-machine-driven embedded design** — one of the most transferable skills in firmware engineering. Rather than a tangle of flags and `if` statements, the system is built around three explicit states (`LOCKED`, `UNLOCKED`, `LOCKOUT`), each with clearly owned responsibilities, non-blocking `millis()`-based timing for the relock and lockout windows, and a deliberate security response to repeated failed authentication. It also shows security-mindedness beyond the code itself: the README includes an honest section on what a real production version would still need — exactly the kind of judgment that separates a working demo from an engineer who understands the domain.
 
 **At a glance:**
 
@@ -36,8 +36,8 @@ This project is a clean demonstration of **state-machine-driven embedded design*
 
 ## 📑 Table of Contents
 
-1. [Overview](#-overview)
-2. [Project Objectives](#-project-objectives)
+1. [Project Overview](#-project-overview)
+2. [Objectives](#-objectives)
 3. [Key Features](#-key-features)
 4. [System Architecture](#️-system-architecture)
 5. [Finite State Machine & Authentication Logic](#-finite-state-machine--authentication-logic)
@@ -45,36 +45,36 @@ This project is a clean demonstration of **state-machine-driven embedded design*
 7. [Automatic Relocking](#️-automatic-relocking)
 8. [Failed-Attempt Detection & Security Lockout](#-failed-attempt-detection--security-lockout)
 9. [LED & Buzzer Status](#-led--buzzer-status)
-10. [LCD User Interface](#-lcd-user-interface)
+10. [LCD Display](#️-lcd-display)
 11. [Keypad Operation](#-keypad-operation)
 12. [Pin Configuration](#-pin-configuration)
 13. [Firmware Parameters](#️-firmware-parameters)
 14. [Firmware Architecture](#-firmware-architecture)
 15. [Technology Stack](#️-technology-stack)
-16. [How to Run](#️-how-to-run)
-17. [Testing & Validation](#-testing--validation)
-18. [Screenshots](#-screenshots)
-19. [Repository Structure](#-repository-structure)
+16. [How to Run the Project](#️-how-to-run-the-project)
+17. [Repository Structure](#-repository-structure)
+18. [Testing and Validation](#-testing-and-validation)
+19. [Output](#-output)
 20. [Security Considerations](#-security-considerations)
 21. [Project Limitations](#️-project-limitations)
 22. [Roadmap](#-roadmap)
-23. [Skills & Learning Outcomes](#-skills--learning-outcomes)
+23. [Skills Demonstrated](#-skills-demonstrated)
 24. [Author](#-author)
 25. [License](#-license)
 
 ---
 
-## 📌 Overview
+## 📌 Project Overview
 
-The **Anti-Theft Locker** is an Arduino UNO electronic access-control prototype demonstrating how authentication, hardware interfacing, actuator control, timing logic, and security response combine into a complete embedded system.
+The **Anti-Theft Locker** is an Arduino UNO electronic access-control prototype that demonstrates how authentication, hardware interfacing, actuator control, timing logic, and security response combine into a complete embedded system.
 
 A **4×4 matrix keypad** handles PIN entry, a **16×2 I2C LCD** provides masked-input feedback, an **SG90 servo** simulates the physical locking mechanism, green/red LEDs give status indication, and a piezo buzzer provides audible feedback and the lockout alarm.
 
-The firmware is structured as a **three-state Finite State Machine** — `LOCKED_STATE`, `UNLOCKED_STATE`, `LOCKOUT_STATE`. A correct PIN unlocks the system for ~5 seconds before automatic relock; three consecutive incorrect attempts trigger a **10-second lockout** with keypad blocking and an alternating alarm. The full system has been implemented and functionally validated in **Wokwi**.
+The firmware is structured as a **three-state Finite State Machine** — `LOCKED_STATE`, `UNLOCKED_STATE`, `LOCKOUT_STATE`. A correct PIN unlocks the system for ~5 seconds before automatic relock; three consecutive incorrect attempts trigger a **10-second lockout** with keypad blocking and an alternating alarm. The full system — authentication, actuation, and security response — was designed and functionally validated end-to-end in **Wokwi**.
 
 ---
 
-## 🎯 Project Objectives
+## 🎯 Objectives
 
 * Implement PIN-based electronic locker authentication.
 * Interface a 4×4 matrix keypad with the Arduino UNO.
@@ -85,26 +85,19 @@ The firmware is structured as a **three-state Finite State Machine** — `LOCKED
 * Detect consecutive failed attempts and trigger a security lockout.
 * Provide visual (LED) and audible (buzzer) status feedback.
 * Report live system information via the Serial Monitor.
-* Validate the complete system through Wokwi simulation.
+* Demonstrate a complete, security-aware Arduino access-control architecture.
 
 ---
 
 ## ✨ Key Features
 
-**Authentication & Access**
 * PIN-based authentication via a 4×4 matrix keypad
 * Masked password display (`*`) on the LCD — `*` clears, `#` submits
 * Three-strike failed-attempt detection with a 10-second security lockout
-
-**Locking Mechanism**
 * SG90 servo-based locking — unlock at 90°, lock at 0°
 * Non-blocking `millis()`-based automatic relock ~5 seconds after unlock
-
-**Feedback & Alerts**
 * Green LED on unlock; red LED on lock/alarm, flashing during lockout
 * Distinct buzzer tones for keypress, access granted, access denied, and the alternating lockout alarm
-
-**System & Tooling**
 * Clean three-state FSM architecture (`LOCKED` / `UNLOCKED` / `LOCKOUT`)
 * 9600-baud Serial telemetry
 * Fully validated in Wokwi simulation
@@ -225,7 +218,13 @@ const byte UNLOCK_ANGLE = 90;
 const unsigned long AUTO_LOCK_DELAY = 5000UL;
 ```
 
-**Sequence:** access granted → servo to 90°, green LED on → `millis()`-based timer starts → after ~5 seconds → servo to 0°, red LED on → back to `LOCKED_STATE`.
+```text
+Access Granted → Servo 90°, Green LED ON → millis() timer starts
+        ↓
+   ~5 seconds elapse
+        ↓
+Servo 0°, Red LED ON → Return to LOCKED_STATE
+```
 
 The primary relock and lockout timers are fully non-blocking, driven by `millis()` rather than `delay()`.
 
@@ -240,15 +239,14 @@ const byte MAX_FAILED_ATTEMPTS = 3;
 const unsigned long LOCKOUT_TIME = 10000UL;
 ```
 
-After the third failed attempt, the system enters `LOCKOUT_STATE`:
+```text
+3rd Consecutive Failed Attempt
+   → LOCKOUT_STATE → Servo stays at 0°, keypad blocked
+   → Red LED alternates 250 ms, buzzer alternates 1200 Hz ↔ 800 Hz
+   → After 10 seconds → counter resets → LOCKED_STATE
+```
 
-* Servo stays at 0°; keypad input is blocked
-* Red LED alternates every 250 ms; green LED stays off
-* Buzzer alternates between 1200 Hz and 800 Hz
-* LCD displays `TOO MANY` / `ATTEMPTS!`
-* After 10 seconds, the failed-attempt counter resets and the system returns to `LOCKED_STATE`
-
-The alarm and LED alternation run on a `millis()`-based 250 ms timer.
+The alarm and LED alternation run on a `millis()`-based 250 ms timer. This guarantees a persistent, unmistakable response to repeated unauthorized access attempts.
 
 ---
 
@@ -264,7 +262,7 @@ The alarm and LED alternation run on a `millis()`-based 250 ms timer.
 
 ---
 
-## 📺 LCD User Interface
+## 🖥️ LCD Display
 
 | Screen | Content |
 |---|---|
@@ -320,21 +318,22 @@ Password input is capped at a configured maximum of **8 characters**.
 
 ## ⚙️ Firmware Parameters
 
-| Parameter | Value | Description |
-|---|---|---|
-| Default PIN | `1234` | Prototype access PIN |
-| Maximum Password Length | 8 characters | Maximum accepted input |
-| Lock / Unlock Angle | 0° / 90° | Servo positions |
-| Auto-Lock Delay | 5000 ms | Automatic relock interval |
-| Maximum Failed Attempts | 3 | Attempts before lockout |
-| Lockout Duration | 10000 ms | Security lockout duration |
-| Alarm Frequencies | 1200 Hz / 800 Hz | Lockout alarm tones |
-| Alarm Toggle Rate | 250 ms | Alarm/LED alternation |
-| Keypress Tone | 2000 Hz / 50 ms | Key feedback |
-| Access Denied Tone | 400 Hz / 500 ms | Warning tone |
-| Access Granted Tone | 1000 Hz → 1500 Hz | Success feedback |
-| UART Baud Rate | 9600 | Serial communication |
-| LCD I2C Address / Size | `0x27` / 16×2 | Display config |
+| Parameter | Value |
+|---|---:|
+| Default PIN | `1234` |
+| Maximum Password Length | 8 characters |
+| Lock Angle | 0° |
+| Unlock Angle | 90° |
+| Auto-Lock Delay | 5000 ms |
+| Maximum Failed Attempts | 3 |
+| Lockout Duration | 10000 ms |
+| Alarm Frequencies | 1200 Hz / 800 Hz |
+| Alarm Toggle Rate | 250 ms |
+| Keypress Tone | 2000 Hz / 50 ms |
+| Access Denied Tone | 400 Hz / 500 ms |
+| Access Granted Tone | 1000 Hz → 1500 Hz |
+| UART Baud Rate | 9600 |
+| LCD I2C Address / Size | `0x27` / 16×2 |
 
 ---
 
@@ -373,21 +372,50 @@ printSystemStatus()
 
 **Hardware:** Arduino UNO (ATmega328P) · 4×4 Matrix Keypad · SG90 Servo Motor · 16×2 I2C LCD (PCF8574) · Piezoelectric Buzzer · Green/Red LEDs · 220Ω Resistors
 
-**Software & Libraries:** Embedded C/C++ · Arduino Core · `Keypad.h` · `Servo.h` · `Wire.h` · `LiquidCrystal_I2C.h` · Wokwi Electronics Simulator · Git/GitHub
+**Software:** Embedded C/C++ · Arduino Core · `Keypad.h` · `Servo.h` · `Wire.h` · `LiquidCrystal_I2C.h` · Wokwi Electronics Simulator
 
 ---
 
-## ▶️ How to Run
+## ▶️ How to Run the Project
 
-1. Open the live simulation: **[▶️ Run on Wokwi](https://wokwi.com/projects/472327786263779329)**
-2. Click **Start Simulation** — the system initializes the keypad, LCD, servo, buzzer, LEDs, and Serial Monitor.
-3. **Successful authentication:** enter `1234#`. Expect `ACCESS GRANTED` → servo to 90°, green LED on → ~5-second timer → servo to 0°, red LED on → back to `LOCKED_STATE`.
-4. **Failed authentication:** enter an incorrect PIN (e.g. `9999#`) twice. Expect `ACCESS DENIED` with decreasing "tries left" on the LCD.
-5. **Security lockout:** enter a third incorrect PIN. Expect `TOO MANY ATTEMPTS!`, keypad blocked, red LED alternating, buzzer alarm for 10 seconds, then automatic reset to `LOCKED_STATE`.
+### 1. Open the Live Simulation
+**[▶️ Open Live Wokwi Simulation](https://wokwi.com/projects/472327786263779329)** — includes the firmware, circuit (`diagram.json`), and required libraries (`libraries.txt`).
+
+### 2. Start the Simulation
+Click **▶ Start Simulation**. The system initializes the keypad, LCD, servo, buzzer, LEDs, and Serial Monitor.
+
+### 3. Test Successful Authentication
+Enter `1234#`. Expect `ACCESS GRANTED` → servo to 90°, green LED on → ~5-second timer → servo to 0°, red LED on → back to `LOCKED_STATE`.
+
+### 4. Test Failed Authentication
+Enter an incorrect PIN (e.g. `9999#`) twice. Expect `ACCESS DENIED` with decreasing "tries left" on the LCD.
+
+### 5. Test Security Lockout
+Enter a third incorrect PIN. Expect `TOO MANY ATTEMPTS!`, keypad blocked, red LED alternating, buzzer alarm for 10 seconds, then automatic reset to `LOCKED_STATE`.
 
 ---
 
-## 🧪 Testing & Validation
+## 📂 Repository Structure
+
+```text
+Anti-Theft-Locker-Embedded-System/
+│
+├── Output/
+│   ├── 01_Running.png
+│   ├── 02_Password_Enter.png
+│   ├── 03_Test-1.png
+│   ├── 04_Test-2.png
+│   └── 05_Test-3.png
+│
+├── sketch.ino
+├── diagram.json
+├── libraries.txt
+└── README.md
+```
+
+---
+
+## 🧪 Testing and Validation
 
 | Test Case | Input / Condition | Expected Result |
 |---|---|---|
@@ -401,46 +429,31 @@ printSystemStatus()
 | Lockout Alarm | During lockout | Red LED flashes, buzzer alternates |
 | Lockout Recovery | Wait 10 seconds | Counter resets, system returns to `LOCKED_STATE` |
 
-**9 / 9 test cases verified** — covering the full authentication, relock, and lockout lifecycle.
+**9 / 9 test cases verified**, each documented with corresponding output evidence below.
 
 ---
 
-## 📸 Screenshots
+## 📸 Output
 
 ### Initial Running State
 ![Initial Running State](Output/01_Running.png)
+`State: LOCKED | Servo: 0° | Red LED: ON`
 
 ### Password Entry & Masking
 ![Password Entry](Output/02_Password_Enter.png)
+`LCD: PASS:**** (masked input)`
 
 ### Successful Authentication
 ![Successful Authentication](Output/03_Test-1.png)
+`State: UNLOCKED | Servo: 90° | Green LED: ON`
 
 ### Failed Authentication
 ![Failed Authentication](Output/04_Test-2.png)
+`Access Denied | Tries Left: 2`
 
 ### Security Lockout
 ![Security Lockout](Output/05_Test-3.png)
-
----
-
-## 📁 Repository Structure
-
-```text
-02-Anti-Theft-Locker-Embedded-System/
-│
-├── Output/
-│   ├── 01_Running.png
-│   ├── 02_Password_Enter.png
-│   ├── 03_Test-1.png
-│   ├── 04_Test-2.png
-│   └── 05_Test-3.png
-│
-├── README.md
-├── diagram.json
-├── libraries.txt
-└── sketch.ino
-```
+`State: LOCKOUT | Keypad Blocked | Alarm: ACTIVE`
 
 ---
 
@@ -483,17 +496,9 @@ A production implementation would additionally need:
 
 ---
 
-## 📚 Skills & Learning Outcomes
+## 💼 Skills Demonstrated
 
-Hands-on experience across the full embedded development cycle — from pin configuration and keypad interfacing through authentication logic and state-driven output control:
-
-**Embedded Programming:** Embedded C/C++ · Arduino UNO / ATmega328P · GPIO and PWM control · `millis()`-based non-blocking timing
-
-**Hardware Interfacing:** Matrix keypad scanning · I2C communication · LCD interfacing · servo motor control · buzzer tone generation
-
-**Software Architecture:** Finite State Machine design · modular firmware structure · input validation and password masking · failed-attempt detection and security lockout logic
-
-**Engineering & Development:** Circuit design and pin mapping · embedded-system debugging · Wokwi simulation and functional testing · Git version control and technical documentation
+Embedded C/C++ · Arduino UNO / ATmega328P programming · Finite State Machine design · matrix keypad interfacing · I2C communication · LCD programming · servo/PWM control · buzzer tone generation · non-blocking `millis()` timing · failed-attempt detection & security lockout logic · input validation and password masking · GPIO control · Wokwi simulation · Serial debugging · Git/GitHub · technical documentation.
 
 ---
 
@@ -508,13 +513,11 @@ Hands-on experience across the full embedded development cycle — from pin conf
 
 ## 📜 License
 
-Licensed under the **MIT License**. See the [`LICENSE`](LICENSE) file for full details.
+Licensed under the **MIT License** — free to use, modify, and distribute for personal, academic, or commercial purposes, with attribution appreciated.
 
 ---
 
 ## ⭐ Project Summary
-
-**Highlights for recruiters:**
 
 * Designed a clean **three-state Finite State Machine** (`LOCKED` / `UNLOCKED` / `LOCKOUT`) to structure all system behavior — no scattered flags or ad-hoc logic.
 * Implemented **non-blocking `millis()`-based timing** for the automatic relock and security lockout windows.
