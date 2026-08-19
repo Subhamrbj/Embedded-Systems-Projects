@@ -9,7 +9,7 @@
 
 <p align="center">
 
-[▶️ **Run Live Wokwi Simulation**](#)
+[▶️ **Run Live Wokwi Simulation**](https://wokwi.com/projects/472607779305181185)
 
 </p>
 
