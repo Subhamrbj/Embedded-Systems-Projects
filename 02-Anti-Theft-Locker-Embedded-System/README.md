@@ -1,7 +1,7 @@
 # 🔒 Anti-Theft Locker — Arduino Access-Control Embedded System
 
-![Arduino](https://img.shields.io/badge/Arduino-UNO-00979D?logo=arduino&logoColor=white)
-![Language](https://img.shields.io/badge/Language-Embedded%20C%2B%2B-00599C?logo=cplusplus&logoColor=white)
+![Arduino](https://img.shields.io/badge/Arduino-UNO-00979D?logo=arduino\&logoColor=white)
+![Language](https://img.shields.io/badge/Language-Embedded%20C%2B%2B-00599C?logo=cplusplus\&logoColor=white)
 ![Simulation](https://img.shields.io/badge/Simulation-Wokwi-8A2BE2)
 ![Architecture](https://img.shields.io/badge/Architecture-Finite%20State%20Machine-6F42C1)
 ![Status](https://img.shields.io/badge/Status-Completed-brightgreen)
@@ -15,7 +15,7 @@
 
 > An Arduino UNO-based electronic access-control system built around a clean three-state Finite State Machine: PIN authentication via 4×4 keypad, masked LCD input, SG90 servo locking, non-blocking automatic relocking, three-strike failed-attempt detection, and a timed security lockout with alarm — the same control pattern found in real electronic door locks and safe mechanisms.
 
-**📄 [sketch.ino](sketch.ino) &nbsp;|&nbsp; 🖼️ [Output](#-output)**
+**📄 [sketch.ino](sketch.ino)  |  🖼️ [Output](#-output)**
 
 ---
 
@@ -25,12 +25,12 @@ This project is a clean demonstration of **state-machine-driven embedded design*
 
 **At a glance:**
 
-| | |
-|---|---|
-| 🎯 **Role demonstrated** | Embedded Firmware Engineer — access control & security systems |
-| 🔧 **Core stack** | Arduino UNO · C/C++ · Finite State Machine · I2C · PWM |
-| 🧪 **Validation** | 9 test cases covering auth, relock, and lockout — all verified |
-| 📦 **Deliverables** | Firmware, circuit definition, telemetry, documented test evidence |
+|                          |                                                                   |
+| ------------------------ | ----------------------------------------------------------------- |
+| 🎯 **Role demonstrated** | Embedded Firmware Engineer — access control & security systems    |
+| 🔧 **Core stack**        | Arduino UNO · C/C++ · Finite State Machine · I2C · PWM            |
+| 🧪 **Validation**        | 9 test cases covering auth, relock, and lockout — all verified    |
+| 📦 **Deliverables**      | Firmware, circuit definition, telemetry, documented test evidence |
 
 ---
 
@@ -129,19 +129,19 @@ The firmware is structured as a **three-state Finite State Machine** — `LOCKED
                 ▼
      ┌──────────────────────┐
      │ Finite State Machine │
-     │  LOCKED / UNLOCKED /  │
-     │       LOCKOUT         │
-     └──────────┬──────────┘
+     │  LOCKED / UNLOCKED / │
+     │       LOCKOUT        │
+     └──────────┬───────────┘
                 │
-       ┌────────┼──────────────┬─────────────┐
-       │        │              │             │
-       ▼        ▼              ▼             ▼
-    ┌──────┐ ┌──────┐     ┌────────┐    ┌────────┐
-    │ SG90 │ │Buzzer│     │ Green  │    │  Red   │
-    │Servo │ │      │     │  LED   │    │  LED   │
-    └──┬───┘ └──────┘     └────────┘    └────────┘
-       │
-       ▼
+        ┌───────┼──────────────┬─────────────┐
+        │       │              │             │
+        ▼       ▼              ▼             ▼
+     ┌──────┐ ┌──────┐     ┌────────┐    ┌────────┐
+     │ SG90 │ │Buzzer│     │ Green  │    │  Red   │
+     │Servo │ │      │     │  LED   │    │  LED   │
+     └──┬───┘ └──────┘     └────────┘    └────────┘
+        │
+        ▼
  ┌────────────────────┐
  │ Locker / Deadbolt  │
  │ Status Simulation  │
@@ -158,7 +158,7 @@ The firmware is structured as a **three-state Finite State Machine** — `LOCKED
                          │  Servo = 0°, Red LED  │
                          └──────────┬───────────┘
                                     │
-                          Enter PIN → Press '#'
+                             Enter PIN → Press '#'
                                     │
                          ┌──────────▼───────────┐
                          │   PIN VALIDATION      │
@@ -167,26 +167,26 @@ The firmware is structured as a **three-state Finite State Machine** — `LOCKED
                                  │        │
                                  ▼        ▼
                     ┌────────────────┐  ┌──────────────────┐
-                    │ UNLOCKED_STATE │  │  ACCESS DENIED    │
-                    │ Servo = 90°    │  │  Fail Count + 1   │
+                    │ UNLOCKED_STATE │  │  ACCESS DENIED   │
+                    │ Servo = 90°    │  │  Fail Count + 1  │
                     │ Green LED ON   │  └────────┬──────────┘
                     └───────┬────────┘           │
                             │              Attempts < 3 → Try again
                         ~5 sec                    │
                             │              Attempts ≥ 3
                             ▼                      │
-                     LOCKED_STATE                  ▼
+                     LOCKED_STATE                 ▼
                                       ┌────────────────────┐
-                                      │   LOCKOUT_STATE     │
-                                      │ Servo = 0°           │
-                                      │ Keypad blocked       │
-                                      │ Alarm + flashing LED │
-                                      └─────────┬───────────┘
-                                                 │
-                                              10 sec
-                                                 │
-                                                 ▼
-                                     Reset counter → LOCKED_STATE
+                                      │   LOCKOUT_STATE    │
+                                      │ Servo = 0°         │
+                                      │ Keypad blocked     │
+                                      │ Alarm + flashing LED│
+                                      └─────────┬──────────┘
+                                                │
+                                             10 sec
+                                                │
+                                                ▼
+                                      Reset counter → LOCKED_STATE
 ```
 
 **Default prototype PIN:** `1234`
@@ -199,11 +199,11 @@ On a valid PIN, the system moves the servo to 90°, turns the green LED on, play
 
 ## 🔓 Servo Locking Mechanism
 
-| System State | Servo Position | Meaning |
-|---|---:|---|
-| `LOCKED_STATE` | 0° | Locker locked |
-| `UNLOCKED_STATE` | 90° | Locker unlocked |
-| `LOCKOUT_STATE` | 0° | Locker remains locked |
+| System State     | Servo Position | Meaning               |
+| ---------------- | -------------: | --------------------- |
+| `LOCKED_STATE`   |             0° | Locker locked         |
+| `UNLOCKED_STATE` |            90° | Locker unlocked       |
+| `LOCKOUT_STATE`  |             0° | Locker remains locked |
 
 ```cpp
 const byte LOCK_ANGLE = 0;
@@ -252,26 +252,26 @@ The alarm and LED alternation run on a `millis()`-based 250 ms timer. This guara
 
 ## 🚦 LED & Buzzer Status
 
-| System Condition | Green LED | Red LED | Buzzer |
-|---|---|---|---|
-| `LOCKED_STATE` | OFF | ON | Silent |
-| Keypress | State dependent | State dependent | 2000 Hz / 50 ms |
-| `UNLOCKED_STATE` | ON | OFF | 1000 Hz → 1500 Hz |
-| Access denied | OFF | ON | 400 Hz / 500 ms |
-| `LOCKOUT_STATE` | OFF | Alternating | 1200 Hz ↔ 800 Hz |
+| System Condition | Green LED       | Red LED         | Buzzer            |
+| ---------------- | --------------- | --------------- | ----------------- |
+| `LOCKED_STATE`   | OFF             | ON              | Silent            |
+| Keypress         | State dependent | State dependent | 2000 Hz / 50 ms   |
+| `UNLOCKED_STATE` | ON              | OFF             | 1000 Hz → 1500 Hz |
+| Access denied    | OFF             | ON              | 400 Hz / 500 ms   |
+| `LOCKOUT_STATE`  | OFF             | Alternating     | 1200 Hz ↔ 800 Hz  |
 
 ---
 
 ## 🖥️ LCD Display
 
-| Screen | Content |
-|---|---|
-| Standby | `ENTER PASSWORD:` / `PASS:****` |
-| Access Granted | `ACCESS GRANTED` / `LOCKER OPEN` |
-| Access Denied | `ACCESS DENIED` / `TRIES LEFT: 2` |
-| Security Lockout | `TOO MANY` / `ATTEMPTS!` |
-| Automatic Relock | `LOCKER LOCKED` / `SECURE` |
-| Lockout Recovery | `LOCKOUT ENDED` / `TRY AGAIN` |
+| Screen           | Content                           |
+| ---------------- | --------------------------------- |
+| Standby          | `ENTER PASSWORD:` / `PASS:****`   |
+| Access Granted   | `ACCESS GRANTED` / `LOCKER OPEN`  |
+| Access Denied    | `ACCESS DENIED` / `TRIES LEFT: 2` |
+| Security Lockout | `TOO MANY` / `ATTEMPTS!`          |
+| Automatic Relock | `LOCKER LOCKED` / `SECURE`        |
+| Lockout Recovery | `LOCKOUT ENDED` / `TRY AGAIN`     |
 
 ---
 
@@ -289,12 +289,12 @@ The alarm and LED alternation run on a `millis()`-based 250 ms timer. This guara
 └─────┴─────┴─────┴─────┘
 ```
 
-| Key | Function |
-|---|---|
-| `0–9` | Enter password digit |
-| `*` | Clear current password input |
-| `#` | Submit password |
-| `A–D` | Ignored |
+| Key   | Function                     |
+| ----- | ---------------------------- |
+| `0–9` | Enter password digit         |
+| `*`   | Clear current password input |
+| `#`   | Submit password              |
+| `A–D` | Ignored                      |
 
 Password input is capped at a configured maximum of **8 characters**.
 
@@ -302,38 +302,38 @@ Password input is capped at a configured maximum of **8 characters**.
 
 ## 🔌 Pin Configuration
 
-| Component | Module Pin | Arduino UNO Pin | Function |
-|---|---|---|---|
-| 4×4 Matrix Keypad | Row 1–4 | D9, D8, D7, D6 | Matrix rows |
-| 4×4 Matrix Keypad | Col 1–4 | D5, D4, D3, D2 | Matrix columns |
-| I2C LCD | SDA / SCL | A4 / A5 | I2C data / clock |
-| I2C LCD | VCC / GND | 5V / GND | Power |
-| SG90 Servo | Signal | D10 | PWM control |
-| SG90 Servo | VCC / GND | 5V / GND | Power |
-| Piezo Buzzer | Positive / GND | D11 / GND | Audio output |
-| Green LED | Anode | D12 via 220Ω | Unlock indicator |
-| Red LED | Anode | D13 via 220Ω | Lock / alarm indicator |
+| Component         | Module Pin     | Arduino UNO Pin | Function               |
+| ----------------- | -------------- | --------------- | ---------------------- |
+| 4×4 Matrix Keypad | Row 1–4        | D9, D8, D7, D6  | Matrix rows            |
+| 4×4 Matrix Keypad | Col 1–4        | D5, D4, D3, D2  | Matrix columns         |
+| I2C LCD           | SDA / SCL      | A4 / A5         | I2C data / clock       |
+| I2C LCD           | VCC / GND      | 5V / GND        | Power                  |
+| SG90 Servo        | Signal         | D10             | PWM control            |
+| SG90 Servo        | VCC / GND      | 5V / GND        | Power                  |
+| Piezo Buzzer      | Positive / GND | D11 / GND       | Audio output           |
+| Green LED         | Anode          | D12 via 220Ω    | Unlock indicator       |
+| Red LED           | Anode          | D13 via 220Ω    | Lock / alarm indicator |
 
 ---
 
 ## ⚙️ Firmware Parameters
 
-| Parameter | Value |
-|---|---:|
-| Default PIN | `1234` |
-| Maximum Password Length | 8 characters |
-| Lock Angle | 0° |
-| Unlock Angle | 90° |
-| Auto-Lock Delay | 5000 ms |
-| Maximum Failed Attempts | 3 |
-| Lockout Duration | 10000 ms |
-| Alarm Frequencies | 1200 Hz / 800 Hz |
-| Alarm Toggle Rate | 250 ms |
-| Keypress Tone | 2000 Hz / 50 ms |
-| Access Denied Tone | 400 Hz / 500 ms |
-| Access Granted Tone | 1000 Hz → 1500 Hz |
-| UART Baud Rate | 9600 |
-| LCD I2C Address / Size | `0x27` / 16×2 |
+| Parameter               |             Value |
+| ----------------------- | ----------------: |
+| Default PIN             |            `1234` |
+| Maximum Password Length |      8 characters |
+| Lock Angle              |                0° |
+| Unlock Angle            |               90° |
+| Auto-Lock Delay         |           5000 ms |
+| Maximum Failed Attempts |                 3 |
+| Lockout Duration        |          10000 ms |
+| Alarm Frequencies       |  1200 Hz / 800 Hz |
+| Alarm Toggle Rate       |            250 ms |
+| Keypress Tone           |   2000 Hz / 50 ms |
+| Access Denied Tone      |   400 Hz / 500 ms |
+| Access Granted Tone     | 1000 Hz → 1500 Hz |
+| UART Baud Rate          |              9600 |
+| LCD I2C Address / Size  |     `0x27` / 16×2 |
 
 ---
 
@@ -347,11 +347,11 @@ enum SystemState {
 };
 ```
 
-| State | Responsibility |
-|---|---|
-| `LOCKED_STATE` | Normal secure standby and password authentication |
-| `UNLOCKED_STATE` | Temporary authorized access |
-| `LOCKOUT_STATE` | Security response after three failed attempts |
+| State            | Responsibility                                    |
+| ---------------- | ------------------------------------------------- |
+| `LOCKED_STATE`   | Normal secure standby and password authentication |
+| `UNLOCKED_STATE` | Temporary authorized access                       |
+| `LOCKOUT_STATE`  | Security response after three failed attempts     |
 
 **Major firmware functions:**
 
@@ -379,18 +379,23 @@ printSystemStatus()
 ## ▶️ How to Run the Project
 
 ### 1. Open the Live Simulation
+
 **[▶️ Open Live Wokwi Simulation](https://wokwi.com/projects/472327786263779329)** — includes the firmware, circuit (`diagram.json`), and required libraries (`libraries.txt`).
 
 ### 2. Start the Simulation
+
 Click **▶ Start Simulation**. The system initializes the keypad, LCD, servo, buzzer, LEDs, and Serial Monitor.
 
 ### 3. Test Successful Authentication
+
 Enter `1234#`. Expect `ACCESS GRANTED` → servo to 90°, green LED on → ~5-second timer → servo to 0°, red LED on → back to `LOCKED_STATE`.
 
 ### 4. Test Failed Authentication
+
 Enter an incorrect PIN (e.g. `9999#`) twice. Expect `ACCESS DENIED` with decreasing "tries left" on the LCD.
 
 ### 5. Test Security Lockout
+
 Enter a third incorrect PIN. Expect `TOO MANY ATTEMPTS!`, keypad blocked, red LED alternating, buzzer alarm for 10 seconds, then automatic reset to `LOCKED_STATE`.
 
 ---
@@ -417,17 +422,17 @@ Anti-Theft-Locker-Embedded-System/
 
 ## 🧪 Testing and Validation
 
-| Test Case | Input / Condition | Expected Result |
-|---|---|---|
-| Initial Boot | Start simulation | `LOCKED_STATE`, red LED ON, servo at 0° |
-| Password Entry | Enter numeric PIN | LCD displays masked `*` characters |
-| Clear Input | Press `*` | Password input cleared |
-| Valid Authentication | `1234#` | Access granted, servo moves to 90° |
-| Automatic Relock | Wait ~5 seconds | Servo returns to 0° |
-| Failed Attempt 1 & 2 | Incorrect PIN | Access denied, remaining attempts shown |
-| Failed Attempt 3 | Incorrect PIN | Security lockout triggered |
-| Lockout Alarm | During lockout | Red LED flashes, buzzer alternates |
-| Lockout Recovery | Wait 10 seconds | Counter resets, system returns to `LOCKED_STATE` |
+| Test Case            | Input / Condition | Expected Result                                  |
+| -------------------- | ----------------- | ------------------------------------------------ |
+| Initial Boot         | Start simulation  | `LOCKED_STATE`, red LED ON, servo at 0°          |
+| Password Entry       | Enter numeric PIN | LCD displays masked `*` characters               |
+| Clear Input          | Press `*`         | Password input cleared                           |
+| Valid Authentication | `1234#`           | Access granted, servo moves to 90°               |
+| Automatic Relock     | Wait ~5 seconds   | Servo returns to 0°                              |
+| Failed Attempt 1 & 2 | Incorrect PIN     | Access denied, remaining attempts shown          |
+| Failed Attempt 3     | Incorrect PIN     | Security lockout triggered                       |
+| Lockout Alarm        | During lockout    | Red LED flashes, buzzer alternates               |
+| Lockout Recovery     | Wait 10 seconds   | Counter resets, system returns to `LOCKED_STATE` |
 
 **9 / 9 test cases verified**, each documented with corresponding output evidence below.
 
@@ -436,23 +441,33 @@ Anti-Theft-Locker-Embedded-System/
 ## 📸 Output
 
 ### Initial Running State
+
 ![Initial Running State](Output/01_Running.png)
+
 `State: LOCKED | Servo: 0° | Red LED: ON`
 
 ### Password Entry & Masking
+
 ![Password Entry](Output/02_Password_Enter.png)
+
 `LCD: PASS:**** (masked input)`
 
 ### Successful Authentication
+
 ![Successful Authentication](Output/03_Test-1.png)
+
 `State: UNLOCKED | Servo: 90° | Green LED: ON`
 
 ### Failed Authentication
+
 ![Failed Authentication](Output/04_Test-2.png)
+
 `Access Denied | Tries Left: 2`
 
 ### Security Lockout
+
 ![Security Lockout](Output/05_Test-3.png)
+
 `State: LOCKOUT | Keypad Blocked | Alarm: ACTIVE`
 
 ---
@@ -485,14 +500,14 @@ A production implementation would additionally need:
 
 ## 🚀 Roadmap
 
-| Area | Planned Enhancements |
-|---|---|
-| 🔑 **Authentication** | RFID (MFRC522) dual-factor with PIN, administrator password management, multi-user support |
-| 💾 **Storage** | EEPROM-based credential storage |
-| 🌐 **Connectivity** | Bluetooth (HC-05) or Wi-Fi (ESP32), cloud alerts via MQTT, remote mobile/web monitoring |
-| 📋 **Logging** | RTC-based access logging (DS3231) with timestamped events |
-| 🔋 **Power** | Battery operation with voltage monitoring |
-| 🛡️ **Physical Security** | Tamper detection, encrypted communication for remote access |
+| Area                      | Planned Enhancements                                                                       |
+| ------------------------- | ------------------------------------------------------------------------------------------ |
+| 🔑 **Authentication**     | RFID (MFRC522) dual-factor with PIN, administrator password management, multi-user support |
+| 💾 **Storage**            | EEPROM-based credential storage                                                            |
+| 🌐 **Connectivity**       | Bluetooth (HC-05) or Wi-Fi (ESP32), cloud alerts via MQTT, remote mobile/web monitoring    |
+| 📋 **Logging**            | RTC-based access logging (DS3231) with timestamped events                                  |
+| 🔋 **Power**              | Battery operation with voltage monitoring                                                  |
+| 🛡️ **Physical Security** | Tamper detection, encrypted communication for remote access                                |
 
 ---
 
@@ -505,8 +520,11 @@ Embedded C/C++ · Arduino UNO / ATmega328P programming · Finite State Machine d
 ## 👤 Author
 
 **Subham Bhattacherjee**
+
 **Project:** Anti-Theft Locker Embedded System
+
 **GitHub:** [github.com/Subhamrbj](https://github.com/Subhamrbj) · [View Repository](https://github.com/Subhamrbj/Anti-Theft-Locker-Embedded-System)
+
 **Live Simulation:** [wokwi.com/projects/472327786263779329](https://wokwi.com/projects/472327786263779329)
 
 ---
@@ -527,4 +545,4 @@ Licensed under the **MIT License** — free to use, modify, and distribute for p
 * Verified **9 distinct test cases** covering the full authentication, relock, and lockout lifecycle.
 * Structured for reproducibility: `sketch.ino`, `diagram.json`, `libraries.txt`, `Output/`, and a public Wokwi simulation link.
 
-> **Project Type:** Embedded Systems / Access Control / Security &nbsp;·&nbsp; **Platform:** Arduino UNO &nbsp;·&nbsp; **Language:** Embedded C/C++ &nbsp;·&nbsp; **Architecture:** Finite State Machine &nbsp;·&nbsp; **Simulation:** Wokwi
+> **Project Type:** Embedded Systems / Access Control / Security  ·  **Platform:** Arduino UNO  ·  **Language:** Embedded C/C++  ·  **Architecture:** Finite State Machine  ·  **Simulation:** Wokwi
