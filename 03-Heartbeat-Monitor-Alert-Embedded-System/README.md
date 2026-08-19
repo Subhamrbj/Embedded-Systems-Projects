@@ -1,10 +1,31 @@
-# ❤️ Heartbeat Monitor with Alert System
+# ❤️ Heartbeat Monitor with Alert System — Arduino Embedded Signal Processing
 
 ![Platform](https://img.shields.io/badge/platform-Arduino%20Uno-00979D?logo=arduino&logoColor=white)
 ![Simulation](https://img.shields.io/badge/simulated%20on-Wokwi-1DA1F2)
 ![Language](https://img.shields.io/badge/language-C%2B%2B-blue?logo=c%2B%2B)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-Educational%20Prototype-yellow)
+
+> An Arduino UNO-based real-time signal-processing pipeline that acquires a pulse waveform, filters it, detects peaks, measures inter-beat intervals, computes BPM, classifies heart-rate state, and drives LCD/LED/buzzer feedback — the same acquire → filter → detect → decide → alert architecture used in real biomedical and wearable-health firmware.
+
+**🔗 [Live Wokwi Simulation](https://wokwi.com/projects/472334564347172865) &nbsp;|&nbsp; 📄 [sketch.ino](#) &nbsp;|&nbsp; 🖼️ [Simulation Outputs](#-simulation-outputs)**
+
+---
+
+## 💼 Why This Project Matters
+
+This project demonstrates a complete embedded **digital signal processing (DSP) pipeline** built from scratch on constrained hardware — not just a sensor readout. It covers analog acquisition, noise filtering, edge-triggered peak detection with hysteresis, timing-based feature extraction (IBI), a real formula-driven calculation (BPM), threshold classification, and multi-channel output arbitration (LCD + dual LED + buzzer) — all running in a single real-time `loop()` on an 8-bit microcontroller. It's the same shape of problem found in wearables, patient monitors, and fitness trackers.
+
+**At a glance:**
+
+| | |
+|---|---|
+| 🎯 **Role demonstrated** | Embedded Firmware Engineer / Biomedical & IoT Systems Developer |
+| 🔧 **Core stack** | Arduino UNO · C/C++ · I2C LCD · Analog Signal Processing |
+| 🧪 **Validation** | 3 classified operating states, verified via live Serial telemetry |
+| 📦 **Deliverables** | Firmware, circuit definition, telemetry logs, documented test evidence |
+
+---
 
 ## 📑 Table of Contents
 
@@ -14,116 +35,96 @@
 4. [Industry Relevance](#-industry-relevance)
 5. [Features](#-features)
 6. [Components Used](#-components-used)
-7. [Embedded Concepts Used](#-embedded-concepts-used)
-8. [BPM Calculation](#-bpm-calculation)
-9. [Architecture](#️-architecture)
-10. [Circuit Connections](#-circuit-connections)
-11. [BPM Classification](#-bpm-classification)
-12. [Folder Structure](#-folder-structure)
-13. [Installation](#️-installation)
-14. [Simulation & How to Run](#️-simulation--how-to-run)
-15. [Simulation Outputs](#-simulation-outputs)
-16. [Test Results](#-test-results)
-17. [Limitations](#️-limitations)
-18. [Future Improvements](#-future-improvements)
-19. [Learning Outcomes](#-learning-outcomes)
-20. [License](#-license)
+7. [Embedded Concepts Applied](#-embedded-concepts-applied)
+8. [Signal Processing Pipeline](#-signal-processing-pipeline)
+9. [BPM Calculation](#️-bpm-calculation)
+10. [System Architecture](#️-system-architecture)
+11. [Circuit Connections](#-circuit-connections)
+12. [BPM Classification](#-bpm-classification)
+13. [Folder Structure](#-folder-structure)
+14. [Installation](#️-installation)
+15. [Simulation & How to Run](#️-simulation--how-to-run)
+16. [Simulation Outputs](#-simulation-outputs)
+17. [Test Results](#-test-results)
+18. [Limitations](#️-limitations)
+19. [Roadmap](#-roadmap)
+20. [Learning Outcomes](#-learning-outcomes)
 21. [Author](#-author)
+22. [License](#-license)
 
 ---
 
 ## 📌 Overview
 
-The **Heartbeat Monitor with Alert System** is an educational embedded-systems prototype based on **Arduino UNO** and **Wokwi simulation**. The system monitors a simulated heartbeat signal, processes the signal, calculates **Beats Per Minute (BPM)** using **Inter-Beat Interval (IBI)** measurement, displays the heart-rate information on a **16×2 I2C LCD**, and generates visual and audible alerts when the calculated BPM crosses predefined thresholds.
+The **Heartbeat Monitor with Alert System** is an Arduino UNO embedded prototype, fully validated in **Wokwi**, that models the end-to-end firmware behind a heart-rate monitoring device. A potentiometer generates a controllable synthetic PPG-like pulse signal; the UNO reads it on an analog pin, smooths it with a moving-average filter, detects beat peaks with hysteresis, measures the **Inter-Beat Interval (IBI)**, computes **BPM**, classifies the result against clinically-inspired thresholds, and drives a **16×2 I2C LCD**, dual-color LED indicators, and a buzzer accordingly.
 
-A potentiometer is used to generate a controllable synthetic PPG-like pulse signal. The Arduino UNO reads the analog input, generates the simulated pulse waveform, applies a moving-average filter, detects pulse peaks, measures the time between beats, calculates BPM, classifies the heart-rate condition, and controls the display and alert outputs.
-
-The project is implemented using **Embedded C/C++** and is designed primarily for educational and academic demonstration.
+Everything — signal generation, filtering, detection, and decision-making — runs in real time inside a single Arduino sketch, with structured Serial telemetry exposing every stage of the pipeline for verification.
 
 ---
 
 ## 🎯 Problem Statement
 
-Heart-rate monitoring systems need to acquire pulse signals, process the signal, determine the interval between successive beats, calculate BPM, identify abnormal conditions, and provide an appropriate alert.
+A heart-rate monitoring system must reliably: acquire a pulse signal, filter out noise, identify the timing between successive beats, convert that timing into BPM, classify the result, and communicate the outcome — all in real time, with no missed or double-counted beats.
 
-This project demonstrates these fundamental operations using an **Arduino UNO** and a simulated pulse signal.
+This project builds and validates that pipeline end-to-end using an Arduino UNO and a controllable synthetic pulse signal, covering:
 
-The system focuses on:
-
-- Analog signal acquisition
-- Synthetic pulse generation
-- Signal filtering
-- Peak detection
-- Inter-Beat Interval measurement
-- BPM calculation
-- Threshold-based classification
-- LCD interfacing
-- Serial communication
-- LED-based status indication
-- Audible alarm generation
-- Real-time embedded processing
+* Analog signal acquisition
+* Synthetic pulse generation (for repeatable, hardware-free testing)
+* Moving-average filtering
+* Hysteresis-based peak detection
+* Inter-Beat Interval measurement
+* BPM calculation
+* Threshold-based classification
+* LCD interfacing (I2C)
+* Serial telemetry
+* LED-based status indication
+* Audible alarm generation
 
 ---
 
 ## ⚠️ Educational Disclaimer
 
-> **This project is strictly an educational embedded-systems prototype and simulation. It is not a medical device and must not be used for medical diagnosis, treatment, emergency monitoring, or clinical decision-making.**
+> **This is strictly an educational embedded-systems prototype and simulation. It is not a medical device and must not be used for medical diagnosis, treatment, emergency monitoring, or clinical decision-making.**
 
-The current implementation uses a **potentiometer-generated synthetic PPG-like signal** in Wokwi rather than a real human pulse sensor.
-
-The BPM thresholds used in this project are demonstration thresholds for the embedded-system simulation and should not be interpreted as medical recommendations.
-
-A real healthcare device would require appropriate sensors, calibration, signal processing, validation, safety testing, clinical evaluation, and regulatory approval.
+The signal source is a **potentiometer-generated synthetic PPG-like waveform** in Wokwi, not a real pulse sensor. The BPM thresholds are demonstration values for the simulation, not medical guidance. A real healthcare device would additionally require validated sensors, calibration, rigorous signal processing, clinical evaluation, safety testing, and regulatory approval.
 
 ---
 
 ## 🏭 Industry Relevance
 
-The embedded concepts demonstrated by this project are relevant to several real-world application areas, including:
+| Domain | Application in this project |
+|---|---|
+| **Wearable Health Tech** | Real-time pulse acquisition and BPM computation |
+| **Biomedical Embedded Systems** | Filtering, peak detection, and physiological signal interpretation |
+| **IoT Healthcare** | Local edge processing with alert generation |
+| **Patient Monitoring** | Threshold-based state classification and alarms |
+| **Fitness & Consumer Devices** | The same acquire → process → display → alert loop used in commercial trackers |
 
-- Wearable health-monitoring systems
-- Fitness monitoring devices
-- Pulse monitoring systems
-- Patient monitoring prototypes
-- Biomedical embedded systems
-- IoT healthcare systems
-- Real-time sensor-processing systems
-- Edge computing applications
-- Alert and notification systems
-- Smart wearable devices
-
-The project demonstrates the basic embedded architecture behind systems that acquire sensor data, process it locally, make decisions, and provide real-time feedback.
+**Engineering skills demonstrated:** Arduino/embedded C/C++ · analog signal acquisition · digital filtering · peak detection with hysteresis · time-domain feature extraction · real-time classification logic · I2C display interfacing · multi-output alarm arbitration · Serial telemetry · simulation-based validation.
 
 ---
 
 ## ✨ Features
 
-- Arduino UNO-based implementation
-- Synthetic PPG-like pulse generation
-- Potentiometer-controlled simulated heart rate
-- Analog input acquisition
-- Moving-average filtering
-- Pulse peak detection
-- Inter-Beat Interval measurement
-- BPM calculation
-- BPM range classification
-- Normal heart-rate indication
-- Low-BPM alarm
-- High-BPM alarm
-- 16×2 I2C LCD display
-- Serial Monitor telemetry
-- Green LED status indication
-- Red LED alarm indication
-- Buzzer-based audible alarm
-- Different alert behavior for low and high BPM
-- Wokwi simulation
-- Modular Embedded C/C++ implementation
+* Arduino UNO-based real-time signal-processing firmware
+* Controllable synthetic PPG-like pulse generation via potentiometer
+* Analog acquisition on `A0`
+* 5-sample moving-average filter for noise smoothing
+* Hysteresis-based peak detection (dual threshold, prevents false triggers)
+* Inter-Beat Interval (IBI) measurement with a minimum-interval guard
+* BPM calculation from IBI, constrained to a realistic 30–220 range
+* Three-state classification: **LOW / NORMAL / HIGH**
+* 16×2 I2C LCD live status display
+* Green LED (normal) / Red LED (alarm, with distinct blink rates per state)
+* Buzzer-driven audible alarm
+* Structured Serial telemetry (`RAW_ADC`, `FILTERED`, `IBI_MS`, `BPM`, `STATE`)
+* Fully reproducible in Wokwi — no physical hardware required to demo
 
 ---
 
 ## 🧩 Components Used
 
-| Component | Quantity | Purpose |
+| Component | Qty | Purpose |
 |---|---:|---|
 | Arduino UNO | 1 | Main microcontroller |
 | Potentiometer | 1 | Synthetic pulse/PPG signal input |
@@ -133,129 +134,75 @@ The project demonstrates the basic embedded architecture behind systems that acq
 | 220Ω Resistor | 2 | LED current limiting |
 | Buzzer | 1 | Audible alarm |
 
-**Software/Tools:** [Wokwi](https://wokwi.com) (circuit simulation), Arduino IDE (firmware development), `LiquidCrystal I2C` library.
+**Software/Tools:** [Wokwi](https://wokwi.com) (circuit simulation) · Arduino IDE (firmware development) · `LiquidCrystal I2C` library.
 
 ---
 
-## 🧠 Embedded Concepts Used
+## 🧠 Embedded Concepts Applied
 
-### 1. Microcontroller Programming
+`Microcontroller Programming` · `Analog Signal Acquisition (ADC)` · `Synthetic Signal Generation` · `Moving-Average Filtering` · `Hysteresis-Based Peak Detection` · `Time-Domain Feature Extraction (IBI)` · `Threshold Classification` · `I2C Communication` · `Digital Output Control` · `Serial Telemetry` · `Real-Time Timing (millis())` · `Simulation-Based Testing`
 
-The Arduino UNO acts as the central processing unit of the system. It reads the input signal, processes the data, calculates BPM, evaluates the system state, and controls the output devices.
+---
 
-### 2. Analog Signal Acquisition
+## 🔬 Signal Processing Pipeline
 
-The synthetic pulse signal is connected to Arduino analog pin `A0`.
-
+### 1. Analog Signal Acquisition
 ```cpp
 #define SENSOR_PIN A0
-```
-
-The signal is read using:
-
-```cpp
 analogRead(SENSOR_PIN);
 ```
 
-### 3. Synthetic Pulse Generation
-
-The potentiometer controls the simulated pulse period. The implementation maps the potentiometer position approximately as follows:
+### 2. Synthetic Pulse Generation
+The potentiometer position maps to a pulse period, letting one control panel sweep across the full clinical range without extra hardware:
 
 ```text
-1500 ms → approximately 40 BPM
-1000 ms → approximately 60 BPM
-800 ms  → approximately 75 BPM
-600 ms  → approximately 100 BPM
-428 ms  → approximately 140 BPM
+1500 ms → ~40 BPM
+1000 ms → ~60 BPM
+800 ms  → ~75 BPM
+600 ms  → ~100 BPM
+428 ms  → ~140 BPM
 ```
 
-This allows different heart-rate conditions to be demonstrated without requiring physical sensor hardware.
-
-### 4. Moving-Average Filtering
-
-The project uses a moving-average filter to smooth the generated signal.
-
+### 3. Moving-Average Filtering
 ```cpp
 const int FILTER_SIZE = 5;
 ```
+Five samples are buffered and averaged before peak detection to suppress noise.
 
-Five signal samples are maintained and averaged before peak detection.
-
-### 5. Peak Detection
-
-A heartbeat is detected when the filtered signal crosses the sensor threshold.
-
+### 4. Hysteresis-Based Peak Detection
 ```cpp
-const int SENSOR_THRESHOLD = 550;
+const int SENSOR_THRESHOLD = 550;  // beat trigger
+const int RESET_THRESHOLD  = 500;  // must fall below before re-arming
 ```
+The signal must drop below the reset threshold before another peak can register — standard debounce logic for physiological waveforms.
 
-A reset threshold is also used:
-
-```cpp
-const int RESET_THRESHOLD = 500;
-```
-
-The signal must fall below the reset threshold before another peak can be detected. This provides basic hysteresis for the peak-detection process.
-
-### 6. Inter-Beat Interval Measurement
-
-The system measures the time between consecutive detected pulse peaks.
-
+### 5. Inter-Beat Interval Measurement
 ```text
-IBI = Current Beat Time - Previous Beat Time
+IBI = Current Beat Time − Previous Beat Time
 ```
-
-The minimum accepted IBI is:
-
 ```cpp
-const int MIN_IBI = 300;
+const int MIN_IBI = 300;  // rejects unrealistically fast triggers
 ```
-
-This prevents unrealistically short intervals from being accepted by the system.
 
 ---
 
 ## ❤️ BPM Calculation
 
-The BPM is calculated from the **Inter-Beat Interval (IBI)**.
-
-### Formula
-
 ```text
 BPM = 60,000 / IBI
 ```
 
-Where:
-- **BPM** = Beats Per Minute
-- **IBI** = Inter-Beat Interval in milliseconds
-- **60,000** = milliseconds in one minute
-
-### Example
-
-If:
-
-```text
-IBI = 800 ms
-```
-
-then:
-
-```text
-BPM = 60,000 / 800
-    = 75 BPM
-```
-
-The implementation calculates BPM using:
+**Example:** `IBI = 800 ms → BPM = 60,000 / 800 = 75 BPM`
 
 ```cpp
 int rawBPM = 60000UL / ibi;
 ```
 
-The calculated value is constrained to **30–220 BPM** for the simulation.
+The result is constrained to **30–220 BPM** for simulation stability.
 
 ---
 
-## 🏗️ Architecture
+## 🏗️ System Architecture
 
 ```text
                     ┌─────────────────────────┐
@@ -347,8 +294,6 @@ The calculated value is constrained to **30–220 BPM** for the simulation.
 
 ## 🚦 BPM Classification
 
-The system uses the following thresholds:
-
 ```cpp
 const int LOW_BPM_THRESHOLD  = 60;
 const int HIGH_BPM_THRESHOLD = 100;
@@ -368,9 +313,9 @@ const int HIGH_BPM_THRESHOLD = 100;
 03-Heartbeat-Monitor-Alert-Embedded-System/
 │
 ├── Output/
-│   ├── high-alert.png
+│   ├── normal.png
 │   ├── low-alert.png
-│   └── normal.png
+│   └── high-alert.png
 │
 ├── README.md
 ├── diagram.json
@@ -388,23 +333,23 @@ const int HIGH_BPM_THRESHOLD = 100;
 
 ---
 
-## 🛠️ Installation
+## ⚙️ Installation
 
-The project can be demonstrated using Wokwi, Arduino UNO simulation, GitHub, and a web browser — no physical hardware is required for the current simulation.
+No physical hardware is required to demo — the project runs entirely in Wokwi.
 
-1. Install the [Arduino IDE](https://www.arduino.cc/en/software) if you plan to flash real hardware (optional — not required for Wokwi simulation).
+1. (Optional, for real hardware) Install the [Arduino IDE](https://www.arduino.cc/en/software).
 2. Install the required library via **Library Manager**: `LiquidCrystal I2C` (also declared in `libraries.txt`).
-3. Wire the circuit as described in [Circuit Connections](#-circuit-connections), or open `diagram.json` directly in [Wokwi](https://wokwi.com).
-4. Open `sketch.ino` in the Arduino IDE, select **Arduino Uno** as the board, and upload (for real hardware) — or open the project directly in Wokwi to simulate.
+3. Wire the circuit per [Circuit Connections](#-circuit-connections), or open `diagram.json` directly in [Wokwi](https://wokwi.com).
+4. Open `sketch.ino` in the Arduino IDE, select **Arduino Uno**, and upload — or simulate directly in Wokwi.
 
 ---
 
 ## ▶️ Simulation & How to Run
 
-1. Open the Wokwi project: **https://wokwi.com/projects/472334564347172865**
-2. Click **Start Simulation**. The LCD shows a startup screen (`HEART MONITOR` / `INITIALIZING...`), then switches to live BPM and status.
-3. Rotate the **potentiometer** to change the simulated pulse period — this drives the system between `NORMAL`, `LOW ALARM`, and `HIGH ALARM` conditions.
-4. Observe the LED and buzzer response for each condition:
+1. Open the Wokwi project: **[wokwi.com/projects/472334564347172865](https://wokwi.com/projects/472334564347172865)**
+2. Click **Start Simulation** — the LCD shows a startup screen (`HEART MONITOR` / `INITIALIZING...`), then live BPM and status.
+3. Rotate the **potentiometer** to sweep the simulated pulse rate between `NORMAL`, `LOW ALARM`, and `HIGH ALARM`.
+4. Watch the LED/buzzer response:
 
    | Condition | Green LED | Red LED | Buzzer |
    |---|---|---|---|
@@ -412,92 +357,63 @@ The project can be demonstrated using Wokwi, Arduino UNO simulation, GitHub, and
    | Low Alarm | OFF | Blinking | ON |
    | High Alarm | OFF | Fast Blinking | ON |
 
-5. Open the **Serial Monitor** to view live telemetry (`RAW_ADC`, `FILTERED`, `IBI_MS`, `BPM`, `STATE`).
+5. Open the **Serial Monitor** for live telemetry (`RAW_ADC`, `FILTERED`, `IBI_MS`, `BPM`, `STATE`).
 
-To run on real hardware instead: wire the circuit per the [Circuit Connections](#-circuit-connections) table, upload `sketch.ino` via the Arduino IDE, and open the Serial Monitor at the configured baud rate to view the same telemetry.
+To run on real hardware: wire per the Circuit Connections table, upload `sketch.ino` via Arduino IDE, and open the Serial Monitor at the configured baud rate.
 
 ---
 
 ## 📸 Simulation Outputs
 
 ### 1. Normal Heart Rate
-
 ![Normal Heart Rate](Output/normal.png)
-
 ```text
-Green LED → ON
-Red LED   → OFF
-Buzzer    → OFF
-LCD       → STATUS: NORMAL
+Green LED → ON   |   Red LED → OFF   |   Buzzer → OFF   |   LCD → STATUS: NORMAL
 ```
 
 ### 2. Low Heart Rate Alarm
-
 ![Low Heart Rate Alarm](Output/low-alert.png)
-
 ```text
-Green LED → OFF
-Red LED   → Blinking
-Buzzer    → ON
-LCD       → STATUS: LOW
+Green LED → OFF   |   Red LED → Blinking   |   Buzzer → ON   |   LCD → STATUS: LOW
 ```
 
 ### 3. High Heart Rate Alarm
-
 ![High Heart Rate Alarm](Output/high-alert.png)
-
 ```text
-Green LED → OFF
-Red LED   → Fast Blinking
-Buzzer    → ON
-LCD       → STATUS: HIGH
+Green LED → OFF   |   Red LED → Fast Blinking   |   Buzzer → ON   |   LCD → STATUS: HIGH
 ```
 
 ---
 
 ## 🧪 Test Results
 
-The system was tested in the Wokwi simulation under three operating conditions.
-
 ### Test Case 1 — Normal (60–100 BPM)
-
 ```text
 LCD Status: NORMAL | Green LED: ON | Red LED: OFF | Buzzer: OFF
-```
 
-Example telemetry:
-```text
 IBI_MS:725 | BPM:82 | STATE:NORMAL
 IBI_MS:853 | BPM:70 | STATE:NORMAL
 ```
 
 ### Test Case 2 — Low Alarm (BPM < 60)
-
 ```text
 LCD Status: LOW | Green LED: OFF | Red LED: Blinking | Buzzer: ON
-```
 
-Example telemetry:
-```text
 IBI_MS:1024 | BPM:58 | STATE:ALARM_LOW
 IBI_MS:1049 | BPM:57 | STATE:ALARM_LOW
 IBI_MS:1203 | BPM:49 | STATE:ALARM_LOW
 ```
 
 ### Test Case 3 — High Alarm (BPM > 100)
-
 ```text
 LCD Status: HIGH | Green LED: OFF | Red LED: Fast Blinking | Buzzer: ON
-```
 
-Example telemetry:
-```text
 IBI_MS:556 | BPM:107 | STATE:ALARM_HIGH
 IBI_MS:501 | BPM:119 | STATE:ALARM_HIGH
 IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 ```
 
-### Test Summary
+### Summary
 
 | Test Case | BPM Condition | LCD | Green LED | Red LED | Buzzer |
 |---|---|---|---|---|---|
@@ -505,81 +421,50 @@ IBI_MS:500 | BPM:120 | STATE:ALARM_HIGH
 | Low Alarm | <60 BPM | LOW | OFF | Blinking | ON |
 | High Alarm | >100 BPM | HIGH | OFF | Fast Blinking | ON |
 
-*(Results captured from Wokwi simulation runs; see `Output/` for corresponding screenshots.)*
+**3 / 3 classification states verified** via live telemetry and screenshot evidence — see `Output/`.
 
 ---
 
 ## ⚠️ Limitations
 
-1. **Synthetic pulse input** — the project does not use a physical pulse sensor. A potentiometer generates a controllable synthetic PPG-like signal in Wokwi.
-2. **Simulation-based implementation** — the demonstration runs in Wokwi rather than on a physical medical sensor and patient measurement system.
-3. **Basic signal processing** — a simple moving-average filter and threshold-based peak detection are used; real biomedical signals typically need considerably more advanced processing.
-4. **Fixed thresholds** — `<60 BPM` (low), `60–100 BPM` (normal), `>100 BPM` (high) are demonstration thresholds, not medical recommendations.
-5. **No motion-artifact handling** — the system does not implement motion-artifact detection or rejection.
-6. **No historical data storage** — BPM measurements are not persisted beyond the current session.
-7. **No wireless communication** — the Arduino UNO implementation has no Wi-Fi, Bluetooth, or cloud connectivity.
-8. **No mobile application** — output is limited to the LCD and Serial Monitor.
-9. **No medical validation** — the project has not undergone clinical testing, medical validation, or medical-device certification.
+* **Synthetic pulse input** — a potentiometer generates the PPG-like signal; no physical pulse sensor is used.
+* **Simulation-based** — validated in Wokwi, not on a physical patient-measurement system.
+* **Basic signal processing** — a simple moving-average filter and threshold-based peak detection are used; real biomedical signals typically need considerably more advanced processing.
+* **Fixed thresholds** — `<60`, `60–100`, `>100` BPM are demonstration values, not medical recommendations.
+* **No motion-artifact handling.**
+* **No historical data storage** — readings aren't persisted beyond the session.
+* **No wireless connectivity** — the UNO implementation has no Wi-Fi/Bluetooth/cloud link.
+* **No mobile application** — output is limited to LCD and Serial Monitor.
+* **No medical validation, clinical testing, or regulatory certification.**
 
 ---
 
-## 🚀 Future Improvements
+## 🚀 Roadmap
 
-**Hardware**
-- Integrate a real pulse/PPG sensor (e.g. MAX30102)
-- Add an OLED display
-- Upgrade to ESP32
-- Add rechargeable battery support
-- Develop a wearable hardware prototype
-
-**Signal Processing**
-- Advanced digital filtering and adaptive thresholding
-- Improved peak detection
-- Motion-artifact rejection and noise reduction
-- Heart-rate variability analysis
-- Signal-quality assessment
-
-**Connectivity**
-- ESP32 Wi-Fi / Bluetooth communication
-- Mobile application and web dashboard
-- Cloud-based monitoring and remote alert notifications
-
-**Data Management**
-- Historical BPM logging (SD card or database)
-- Real-time graphing
-- Long-term monitoring
-
-**System**
-- User-specific configuration and configurable thresholds
-- Improved alarm logic
-- Battery monitoring and low-power operation
+| Area | Planned Enhancements |
+|---|---|
+| 🔧 **Hardware** | Real pulse/PPG sensor (e.g. MAX30102), OLED upgrade, move to ESP32, battery support, wearable form factor |
+| 🔬 **Signal Processing** | Adaptive filtering/thresholding, improved peak detection, motion-artifact rejection, heart-rate variability analysis, signal-quality scoring |
+| 🌐 **Connectivity** | ESP32 Wi-Fi/Bluetooth, mobile app + web dashboard, cloud monitoring, remote alerts |
+| 💾 **Data** | SD-card/database logging, real-time graphing, long-term trend tracking |
+| ⚙️ **System** | Configurable thresholds, refined alarm logic, battery monitoring, low-power modes |
 
 ---
 
-## 📚 Learning Outcomes
+## 🎓 Learning Outcomes
 
-This project provides practical experience in:
+Hands-on experience across: Arduino/embedded C/C++ · analog signal acquisition and synthetic signal generation · moving-average filtering and hysteresis-based peak detection · IBI measurement and BPM calculation · threshold-based state classification · I2C LCD interfacing · LED/buzzer output control · `millis()`-based real-time timing · Serial telemetry · Wokwi simulation and embedded debugging · technical documentation and GitHub project structuring.
 
-- Embedded C/C++ and Arduino UNO programming
-- Analog signal acquisition and synthetic signal generation
-- Moving-average filtering and peak detection
-- Inter-Beat Interval measurement and BPM calculation
-- Threshold-based classification and state-based embedded logic
-- LCD interfacing and I2C communication
-- LED and buzzer control
-- Serial communication and `millis()`-based real-time timing
-- Wokwi circuit simulation and embedded-system debugging
-- GitHub project organization and technical documentation
+```text
+Signal Acquisition + Filtering + Peak Detection + IBI/BPM Calculation
+   + Classification Logic + Multi-Output Alerts
+        ↓
+   Complete Embedded Signal-Processing System
+```
 
 ---
 
-## 📄 License
-
-This project is licensed under the **MIT License** — free to use, modify, and distribute for personal, academic, or commercial purposes, with attribution appreciated.
-
----
-
-## 👨‍💻 Author
+## 👤 Author
 
 **Subham Bhattacherjee**
 M.Tech Computer Science & Engineering — Kalyani University
@@ -587,4 +472,26 @@ M.Tech Computer Science & Engineering — Kalyani University
 **Areas of Interest:** Embedded Systems · Artificial Intelligence · Machine Learning · Research and Development
 
 **GitHub:** [View Repository](https://github.com/Subhamrbj/Embedded-Systems-Projects/tree/main/03-Heartbeat-Monitor-Alert-Embedded-System)
-**Simulation:** https://wokwi.com/projects/472334564347172865
+**Live Simulation:** [wokwi.com/projects/472334564347172865](https://wokwi.com/projects/472334564347172865)
+
+---
+
+## 📜 License
+
+Licensed under the **MIT License** — free to use, modify, and distribute for personal, academic, or commercial purposes, with attribution appreciated.
+
+---
+
+## ⭐ Project Summary
+
+**Highlights for recruiters:**
+
+* Built a complete **embedded DSP pipeline** on Arduino UNO: acquisition → filtering → peak detection → feature extraction → classification → multi-channel alerting.
+* Implemented **hysteresis-based peak detection** and a **moving-average filter** to handle noisy physiological-style signals.
+* Derived **BPM from measured Inter-Beat Interval** using real signal-processing math, not lookup tables.
+* Designed a **three-state alarm system** (LOW / NORMAL / HIGH) with distinct LED/buzzer behavior per state.
+* Interfaced a **16×2 I2C LCD** for live status and exposed full pipeline telemetry over Serial for verification.
+* Validated all three operating states with **documented test evidence and screenshots**.
+* Structured for reproducibility: `sketch.ino`, `diagram.json`, `libraries.txt`, `Output/`, and a public Wokwi simulation link.
+
+> **Project Type:** Embedded Systems / Biomedical Signal Processing / IoT Healthcare &nbsp;·&nbsp; **Platform:** Arduino UNO &nbsp;·&nbsp; **Language:** Embedded C/C++ &nbsp;·&nbsp; **Simulation:** Wokwi
