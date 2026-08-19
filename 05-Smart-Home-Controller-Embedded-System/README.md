@@ -1,20 +1,27 @@
 # 🏠 Smart Home Controller — ESP32 Embedded Automation & Security System
 
 ![Platform](https://img.shields.io/badge/platform-ESP32-E7352C?logo=espressif&logoColor=white)
-![Simulation](https://img.shields.io/badge/simulated%20on-Wokwi-1DA1F2)
-![Language](https://img.shields.io/badge/language-C%2B%2B-blue?logo=c%2B%2B)
+![Language](https://img.shields.io/badge/language-C%2B%2B-00599C?logo=cplusplus&logoColor=white)
+![Simulation](https://img.shields.io/badge/simulation-Wokwi-8A2BE2)
+![Connectivity](https://img.shields.io/badge/connectivity-Embedded%20Automation-blue)
+![Status](https://img.shields.io/badge/status-Completed-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
-![Status](https://img.shields.io/badge/status-Prototype-yellow)
+
+<p align="center">
+
+[▶️ **Run Live Wokwi Simulation**](#)
+
+</p>
 
 > An ESP32-based smart-home automation and security controller that fuses environmental sensing, motion-aware lighting, hysteresis-controlled fan automation, manual override, and independent intrusion detection into one production-style embedded firmware — designed, wired, and functionally validated end-to-end in Wokwi.
 
-**🔗 [View Live Simulation on Wokwi](#) &nbsp;|&nbsp; 📄 [sketch.ino](#) &nbsp;|&nbsp; 🖼️ [Screenshots](#-screenshots)**
+**📄 [sketch.ino](sketch.ino) &nbsp;|&nbsp; 🖼️ [Output](#-output)**
 
 ---
 
 ## 💼 Why This Project Matters
 
-This isn't a blinking-LED demo — it's a systems-level firmware project that mirrors how real smart-building controllers are built: multiple sensors feeding a shared decision engine, competing control priorities (auto vs. manual), stateful hysteresis to prevent actuator chatter, and a security subsystem that runs independently of — but coordinates with — everyday automation. It demonstrates the full firmware lifecycle: requirements → architecture → GPIO/I2C/ADC interfacing → control-logic implementation → simulation-based verification → documentation.
+This project goes well beyond a single-sensor demo — it's a **multi-function embedded control system combining environmental sensing, automatic appliance control, manual override, hysteresis-based state management, and independent security monitoring**, all coordinated by one ESP32. It demonstrates the kind of engineering judgment real smart-building controllers require: how to combine multiple sensor inputs, prioritize manual commands over automation, prevent actuator chatter with hysteresis, detect security events independently, and expose live system state through local OLED and Serial interfaces.
 
 **At a glance:**
 
@@ -29,186 +36,125 @@ This isn't a blinking-LED demo — it's a systems-level firmware project that mi
 
 ## 📑 Table of Contents
 
-1. [Overview](#-overview)
+1. [Project Overview](#-project-overview)
 2. [Problem Statement](#-problem-statement)
 3. [Objectives](#-objectives)
 4. [Industry Relevance & Skills Demonstrated](#-industry-relevance--skills-demonstrated)
-5. [Features](#-features)
+5. [Key Features](#-key-features)
 6. [Components Used](#-components-used)
-7. [Technologies Used](#️-technologies-used)
-8. [Embedded Concepts Applied](#-embedded-concepts-applied)
-9. [System Architecture](#️-system-architecture)
-10. [Circuit Connections](#-circuit-connections)
-11. [Automation Logic](#️-automation-logic)
-12. [Manual Override](#️-manual-override)
-13. [Security System](#-security-system)
-14. [Folder Structure](#-folder-structure)
-15. [Installation](#️-installation)
-16. [How to Run](#️-how-to-run)
-17. [Wokwi Simulation](#️-wokwi-simulation)
-18. [Test Scenarios](#-test-scenarios)
-19. [Screenshots](#-screenshots)
-20. [Test Results](#-test-results)
+7. [System Architecture](#️-system-architecture)
+8. [System Workflow](#-system-workflow)
+9. [Automation Logic](#️-automation-logic)
+10. [Manual Override](#️-manual-override)
+11. [Security System](#-security-system)
+12. [Circuit Connections](#-circuit-connections)
+13. [Firmware Decision Rules](#️-firmware-decision-rules)
+14. [OLED Status Display](#️-oled-status-display)
+15. [Serial Telemetry](#-serial-telemetry)
+16. [Technology Stack](#️-technology-stack)
+17. [How to Run](#️-how-to-run-the-project)
+18. [Repository Structure](#-repository-structure)
+19. [Testing and Validation](#-testing-and-validation)
+20. [Output](#-output)
 21. [Known Limitations](#️-known-limitations)
 22. [Roadmap](#-roadmap)
-23. [Learning Outcomes](#-learning-outcomes)
+23. [Skills Demonstrated](#-skills-demonstrated)
 24. [Author](#-author)
 25. [License](#-license)
 
 ---
 
-## 📖 Overview
+## 📌 Project Overview
 
-Traditional room-control setups rely on manual switching and have little to no awareness of the environment they operate in — leading to wasted energy, reduced convenience, and no meaningful integration between comfort systems and security.
+The **Smart Home Controller** is an ESP32-based embedded automation and security prototype that integrates **environmental monitoring, motion-aware lighting, temperature-controlled fan automation, manual appliance control, and independent intrusion detection** into one centralized controller.
 
-This project solves that with a **centralized ESP32 controller** that unifies:
+The system continuously reads temperature, humidity, ambient light, and motion information. The ESP32 processes these inputs using automation rules, hysteresis, manual-override logic, and security-state management before driving the connected actuators.
 
-* 🌡️ Temperature & 💧 humidity monitoring (DHT22)
-* 💡 Automatic, motion-aware room lighting
-* 🌬️ Temperature-driven fan control with hysteresis
-* 🕹️ Manual override for every actuator
-* 🌙 Ambient-light sensing (LDR)
-* 🚶 Motion detection (PIR)
-* 🔐 Independent arm/disarm security subsystem
-* 🚨 Visual + audible alarm indication
-* 🖥️ Real-time OLED status dashboard
-* 📡 Structured Serial telemetry for debugging and verification
+System status is presented locally through an **SSD1306 OLED display** and structured **Serial telemetry**, allowing real-time observation and debugging.
 
-The firmware continuously reads sensors, evaluates control rules, drives actuators, manages security state, and reports live system status via OLED and Serial — the same control loop pattern used in commercial building-automation controllers.
+The full system — sensing, decision logic, actuation, security handling, and user feedback — was designed and functionally validated end-to-end in **Wokwi**.
 
 ---
 
 ## 🎯 Problem Statement
 
-Conventional room-control systems typically fall short in several ways:
+Traditional room-control systems typically depend heavily on manual operation and provide limited awareness of environmental conditions.
 
-1. Appliances require manual operation with no automation fallback.
-2. Lights stay on unnecessarily, wasting energy.
-3. Fans run without regard to actual room temperature.
-4. Environmental conditions aren't continuously monitored.
-5. Motion-based automation is often unavailable.
-6. Security monitoring is bolted on separately from appliance control.
-7. Manual override isn't available once automation takes over.
+Common limitations include:
 
-This project directly addresses each of these with a single embedded controller capable of **sensor-driven automation, user override, continuous environmental monitoring, and independent security detection**.
+* Appliances requiring manual operation with no automation fallback.
+* Lights remaining ON unnecessarily and wasting energy.
+* Fans operating without considering actual room temperature.
+* Environmental conditions not being continuously monitored.
+* Lack of motion-aware lighting automation.
+* Security monitoring operating separately from appliance control.
+* Limited or unavailable manual override once automation is active.
+
+This project addresses these limitations through a centralized ESP32 controller capable of sensor-driven automation, manual user control, continuous environmental monitoring, and independent security detection.
 
 ---
 
 ## 🎯 Objectives
 
 * Build an ESP32-based smart-home controller from the ground up.
-* Monitor temperature and humidity via DHT22.
-* Measure ambient brightness via LDR (ADC).
-* Detect human presence via PIR.
-* Automate room lighting from combined light + motion state.
-* Automate fan control using a temperature threshold with hysteresis.
+* Monitor temperature and humidity using a DHT22 sensor.
+* Measure ambient brightness using an LDR connected to an ADC input.
+* Detect human motion using a PIR sensor.
+* Automate room lighting using combined ambient-light and motion conditions.
+* Automate fan operation using temperature thresholds with hysteresis.
 * Provide manual override for lighting and fan control.
-* Implement a fully independent security subsystem (arm/disarm, alarm).
-* Trigger visual + audible alerts on intrusion while armed.
-* Present live system state on an OLED display.
+* Implement an independent security subsystem with arm/disarm functionality.
+* Trigger visual and audible alerts when intrusion is detected while armed.
+* Display live system information through an OLED.
 * Stream structured Serial telemetry for debugging and verification.
-* Validate every operating mode through Wokwi simulation.
+* Validate the complete operating system through Wokwi simulation.
 
 ---
 
 ## 🏭 Industry Relevance & Skills Demonstrated
 
-This prototype maps directly onto real engineering domains:
+This prototype maps directly onto several real engineering domains:
 
 | Domain | Application in this project |
 |---|---|
-| **Smart Home / Smart Building** | Centralized lighting + appliance control |
-| **Energy Management** | Automation driven by real sensor conditions, not fixed timers |
-| **IoT & Edge Computing** | All decision-making runs locally on the ESP32 |
+| **Smart Home / Smart Building** | Centralized lighting and appliance control |
+| **Energy Management** | Automation based on real environmental conditions |
+| **IoT & Edge Computing** | Local decision-making directly on the ESP32 |
 | **Environmental Monitoring** | Continuous temperature, humidity, and light sensing |
-| **Security Systems** | PIR-based intrusion detection with alarm handling |
-| **Embedded Firmware** | Real-time sensor fusion and actuator control |
+| **Security Systems** | PIR-based intrusion detection and alarm handling |
+| **Embedded Firmware** | Real-time sensor processing and actuator control |
 | **Industrial Automation** | Threshold-based control with hysteresis and state management |
 
-**Engineering skills demonstrated:** ESP32 firmware development · Embedded C/C++ · GPIO programming · ADC-based sensing · I2C communication · sensor interfacing · threshold & hysteresis-based control · manual-override arbitration · event detection · finite-state management · actuator control · security-event handling · Serial telemetry · simulation-based verification.
+**Engineering skills demonstrated:** ESP32 firmware development · Embedded C/C++ · GPIO programming · ADC-based sensing · I2C communication · sensor interfacing · threshold and hysteresis-based control · manual-override arbitration · event detection · finite-state management · actuator control · security-event handling · Serial telemetry · simulation-based verification.
 
-> **Hardware note:** For physical deployment, real appliances must be driven through appropriately rated, electrically isolated relay or solid-state switching hardware — not directly from GPIO.
-
----
-
-## ✨ Features
-
-### 🌡️ Environmental Monitoring
-Temperature and humidity via DHT22, ambient light via LDR, motion via PIR — all fused into a single, continuously updated system state visible on OLED and Serial.
-
-### 💡 Automatic Lighting
-
-```text
-                 Read LDR
-                    ↓
-              Is Room Dark?
-                /       \
-              YES        NO
-               │          │
-               ▼          ▼
-           Read PIR     Light OFF
-               │
-            Motion?
-            /    \
-          YES     NO
-           │       │
-           ▼       ▼
-       Light ON  Check Timeout
-                    │
-                    ▼
-                Light OFF
-```
-
-| Condition | Result |
-|---|---|
-| Dark + Motion Detected | Light ON |
-| Dark + No Motion | Timeout evaluated |
-| Timeout Reached | Light OFF |
-| Bright Environment | Light OFF |
-| Manual Mode | Manual state applied |
-
-### 🌬️ Automatic Fan Control (with Hysteresis)
-
-```text
-              Read Temperature
-                     ↓
-            Temperature ≥ 28°C?
-              /          \
-            YES           NO
-             │             │
-             ▼             ▼
-          FAN ON      Temperature ≤ 27°C?
-                           /       \
-                         YES        NO
-                          │          │
-                          ▼          ▼
-                       FAN OFF   Keep Previous
-                                  Fan State
-```
-
-| Temperature | Fan Action |
-|---|---|
-| ≥ 28°C | ON |
-| ≤ 27°C | OFF |
-| 27°C < T < 28°C | Maintain previous state |
-
-The 27–28°C dead-band prevents rapid ON/OFF chatter — the same technique used in real HVAC thermostats.
-
-### 🕹️ Manual Appliance Control
-Dedicated push buttons for light, fan, and security let the user override automatic decisions at any time — critical for testing, maintenance, and edge-case handling.
-
-### 🔐 Security Monitoring
-Runs independently of appliance automation. Once armed, any PIR motion event immediately triggers the alarm — visual (LED) and audible (buzzer) — regardless of the current lighting/fan state.
-
-### 🖥️ OLED Status Display
-Live view of temperature, humidity, LDR reading, motion state, light/fan state and mode, security state, and alarm state — refreshed every cycle.
-
-### 📡 Serial Telemetry
-Structured, human-readable output for debugging, automation verification, and functional testing during development.
+> **Hardware note:** For physical deployment, real appliances must be driven through appropriately rated, electrically isolated relay or solid-state switching hardware — not directly from ESP32 GPIO pins.
 
 ---
 
-## 🔧 Components Used
+## ✨ Key Features
+
+* Centralized smart-home control using a single ESP32
+* Real-time temperature and humidity monitoring using DHT22
+* Ambient-light measurement using an LDR and ADC
+* PIR-based motion detection
+* Motion-aware automatic room lighting
+* Temperature-based automatic fan control
+* 27–28°C hysteresis dead-band for stable fan operation
+* Manual override for lighting and fan control
+* Independent security arm/disarm subsystem
+* PIR-based intrusion detection while security is armed
+* Visual security alarm indication through LED
+* Audible security alarm through buzzer
+* Live OLED system-status dashboard
+* Structured Serial Monitor telemetry
+* Timer-based lighting timeout handling
+* Priority arbitration between manual and automatic control
+* Finite-state security management
+* Fully validated in Wokwi simulation
+
+---
+
+## 🧩 Components Used
 
 | Component | Qty | Purpose |
 |---|---:|---|
@@ -216,7 +162,7 @@ Structured, human-readable output for debugging, automation verification, and fu
 | DHT22 Sensor | 1 | Temperature and humidity sensing |
 | LDR | 1 | Ambient-light measurement |
 | PIR Sensor | 1 | Motion detection |
-| SSD1306 OLED 128×64 | 1 | Real-time status display |
+| SSD1306 OLED 128×64 | 1 | Real-time system display |
 | Room-Light LED | 1 | Simulated room lighting |
 | Fan LED | 1 | Simulated fan status |
 | Security LED | 1 | Security alarm indication |
@@ -229,48 +175,23 @@ Structured, human-readable output for debugging, automation verification, and fu
 
 ---
 
-## 🛠️ Technologies Used
-
-| Technology | Application |
-|---|---|
-| ESP32 | Main embedded controller |
-| Embedded C/C++ | Firmware development |
-| Arduino Framework | Firmware development |
-| DHT22 | Temperature and humidity sensing |
-| LDR | Ambient-light sensing |
-| PIR | Motion detection |
-| SSD1306 OLED | System status interface |
-| I2C | OLED communication |
-| GPIO | Digital input/output |
-| ADC | LDR measurement |
-| Wokwi | Virtual circuit simulation |
-| Serial Monitor | Debugging and telemetry |
-
----
-
-## 🧠 Embedded Concepts Applied
-
-`GPIO Programming` · `ADC Sensing` · `I2C Communication` · `Digital Input/Output` · `Threshold Control` · `Hysteresis` · `Timer Logic` · `Finite-State Management` · `Event Detection` · `Priority Arbitration (Manual > Auto)` · `Serial Communication` · `Sensor Interfacing` · `Simulation-Based Testing`
-
----
-
 ## 🏗️ System Architecture
 
 ```text
-                         ┌───────────────────────┐
-                         │      ESP32 DevKit     │
-                         │    Main Controller    │
-                         └───────────┬───────────┘
-                                     │
-              ┌──────────────────────┼──────────────────────┐
-              │                      │                      │
-              ▼                      ▼                      ▼
-       ┌──────────────┐      ┌────────────────┐      ┌──────────────┐
-       │ DHT22 Sensor │      │   LDR + PIR    │      │ Push Buttons │
-       │ Temp/Humidity│      │ Light + Motion │      │ User Control │
-       └──────┬───────┘      └───────┬────────┘      └──────┬───────┘
-              │                      │                      │
-              └──────────────────────┼──────────────────────┘
+                         ┌─────────────────────┐
+                         │      ESP32 DevKit    │
+                         │   Main Controller    │
+                         └──────────┬───────────┘
+                                    │
+              ┌─────────────────────┼─────────────────────┐
+              │                     │                     │
+              ▼                     ▼                     ▼
+      ┌───────────────┐      ┌────────────────┐    ┌──────────────┐
+      │  DHT22 Sensor │      │   LDR + PIR    │     │ Push Buttons │
+      │ Temp/Humidity │      │ Light + Motion │     │ User Control │
+      └───────┬───────┘      └───────┬────────┘     └──────┬───────┘
+              │                      │                     │
+              └──────────────────────┼─────────────────────┘
                                      ▼
                             ┌────────────────────┐
                             │    Control Logic   │
@@ -282,92 +203,143 @@ Structured, human-readable output for debugging, automation verification, and fu
                             │ • State Management │
                             └─────────┬──────────┘
                                       │
-                      ┌───────────────┼────────────────┐
-                      │               │                │
-                      ▼               ▼                ▼
-               ┌──────────────┐ ┌───────────────┐ ┌──────────────┐
-               │ SSD1306 OLED │ │ Light / Fan   │ │ Security     │
-               │ Status       │ │ LED Actuators │ │ LED + Buzzer │
-               └──────────────┘ └───────────────┘ └──────────────┘
+                       ┌──────────────┼────────────────┐
+                       │              │                │
+                       ▼              ▼                ▼
+                ┌──────────────┐┌───────────────┐┌──────────────┐
+                │ SSD1306 OLED ││ Light / Fan   ││ Security     │
+                │    Status    ││ LED Actuators ││ LED + Buzzer │
+                └──────────────┘└───────────────┘└──────────────┘
                                       │
                                       ▼
-                               ┌─────────────────┐
-                               │ Serial Monitor  │
-                               │ Live Telemetry  │
-                               └─────────────────┘
-```
-
-**Control loop:**
-
-```text
-Sensors + User Inputs → Input Processing → Control & Decision Logic
-        → [ Light | Fan | Security | OLED ] → Serial Telemetry → Repeat
+                              ┌─────────────────┐
+                              │ Serial Monitor  │
+                              │ Live Telemetry  │
+                              └─────────────────┘
 ```
 
 ---
 
-## 🔌 Circuit Connections
+## 🔄 System Workflow
 
-| Module | ESP32 GPIO | Interface |
-|---|---:|---|
-| DHT22 Data | GPIO 4 | Digital Input |
-| PIR Output | GPIO 27 | Digital Input |
-| LDR | GPIO 34 | ADC Input |
-| Room-Light LED | GPIO 18 | Digital Output |
-| Fan LED | GPIO 19 | Digital Output |
-| Buzzer | GPIO 23 | Digital Output |
-| Security LED | GPIO 25 | Digital Output |
-| Safe-Status LED | GPIO 26 | Digital Output |
-| Manual Light Button | GPIO 32 | Digital Input |
-| Manual Fan Button | GPIO 33 | Digital Input |
-| Security Button | GPIO 14 | Digital Input |
-| OLED SDA | GPIO 21 | I2C |
-| OLED SCL | GPIO 22 | I2C |
-
-> **Note:** Always cross-check final GPIO assignments against `sketch.ino` and `diagram.json` before physical deployment.
+```text
+Read Environmental Sensors
+        ↓
+Read User Inputs
+        ↓
+Process DHT22 / LDR / PIR
+        ↓
+Evaluate Automatic Control Rules
+        ↓
+Check Manual Override
+        ↓
+Apply Lighting + Fan Control
+        ↓
+Process Security State
+        ↓
+Trigger Alarm if Required
+        ↓
+Update OLED
+        ↓
+Send Serial Telemetry
+        ↓
+Repeat Control Cycle
+```
 
 ---
 
 ## ⚙️ Automation Logic
 
-### Lighting
+### 💡 Automatic Lighting
 
-| Condition | Result |
-|---|---|
-| Dark + Motion Detected | Light ON |
-| Dark + No Motion | Timeout evaluated |
-| Timeout Reached | Light OFF |
-| Bright Environment | Light OFF |
-| Manual Mode | Manual state applied |
+```text
+Dark + Motion Detected  →  Light ON
+Dark + No Motion        →  Timeout evaluated
+Timeout Reached         →  Light OFF
+Bright Environment      →  Light OFF
+Manual Mode             →  Manual state applied
+```
 
-### Fan
+```text
+                  Read LDR
+                    ↓
+               Is Room Dark?
+                /       \
+              YES        NO
+               │          │
+               ▼          ▼
+           Read PIR     Light OFF
+               │
+             Motion?
+             /    \
+           YES     NO
+            │       │
+            ▼       ▼
+        Light ON  Check Timeout
+                      │
+                      ▼
+                  Light OFF
+```
 
-| Temperature | Action |
-|---|---|
-| ≥ 28°C | Fan ON |
-| ≤ 27°C | Fan OFF |
-| 27°C < T < 28°C | Previous state maintained |
+### 🌬️ Automatic Fan Control
+
+The fan uses a temperature threshold combined with hysteresis to prevent rapid ON/OFF switching.
+
+```text
+Temperature ≥ 28°C          →  Fan ON
+Temperature ≤ 27°C          →  Fan OFF
+27°C < Temperature < 28°C   →  Maintain previous state
+```
+
+```cpp
+const float FAN_ON_THRESHOLD_C  = 28.0f;
+const float FAN_OFF_THRESHOLD_C = 27.0f;
+```
+
+The **27–28°C dead-band** prevents rapid actuator chatter and follows the same basic principle used in practical HVAC thermostat control.
 
 ---
 
 ## 🕹️ Manual Override
 
 ```text
-User Command → Manual Control → Overrides Automatic Decision
+User Command
+      ↓
+Manual Control
+      ↓
+Overrides Automatic Decision
+      ↓
+Apply Requested Appliance State
 ```
 
-Independent toggle buttons exist for **light**, **fan**, and **security (arm/disarm)** — giving the user full authority over automation at any time, which is essential for testing, maintenance, and edge-case handling.
+Dedicated push buttons allow independent control of:
+
+* Room light
+* Fan
+* Security arm/disarm
+
+Manual control takes priority over the corresponding automatic decision, allowing the user to override the system at any time — useful for testing, maintenance, and situations where automatic control is not desirable.
 
 ---
 
 ## 🔐 Security System
 
-Runs fully independent of appliance automation:
+The security subsystem operates independently from normal appliance automation.
 
 ```text
-Security Button → ARM / DISARM → Security ARMED
-   → PIR Motion Detected → Security Event
-   → Security LED ON + Buzzer Activated → Alarm TRIGGERED
+Security Button
+      ↓
+ARM / DISARM
+      ↓
+Security ARMED
+      ↓
+PIR Motion Detected?
+      ↓
+Security Event
+      ↓
+Security LED ON + Buzzer Activated
+      ↓
+Alarm TRIGGERED
 ```
 
 | Security State | Motion | System Response |
@@ -375,11 +347,100 @@ Security Button → ARM / DISARM → Security ARMED
 | DISARMED | Detected | No security alarm |
 | ARMED | Not Detected | Continue monitoring |
 | ARMED | Detected | Security LED + Buzzer |
-| Disarmed | Any | Alarm cleared |
+| DISARMED | Any | Alarm cleared |
+
+The security system continues operating independently even when lighting or fan automation is active.
 
 ---
 
-## 📁 Folder Structure
+## 🔌 Circuit Connections
+
+| Module | GPIO Pin | Interface |
+|---|---:|---|
+| DHT22 Data | 4 | Digital Input |
+| PIR Output | 27 | Digital Input |
+| LDR | 34 | ADC Input |
+| Room-Light LED | 18 | Digital Output |
+| Fan LED | 19 | Digital Output |
+| Buzzer | 23 | Digital Output |
+| Security LED | 25 | Digital Output |
+| Safe-Status LED | 26 | Digital Output |
+| Manual Light Button | 32 | Digital Input |
+| Manual Fan Button | 33 | Digital Input |
+| Security Button | 14 | Digital Input |
+| OLED SDA | 21 | I2C |
+| OLED SCL | 22 | I2C |
+
+> ⚠️ **Hardware note:** Always cross-check final GPIO assignments against `sketch.ino` and `diagram.json` before physical deployment.
+
+---
+
+## ⚙️ Firmware Decision Rules
+
+```text
+Dark + Motion             → Light ON
+Dark + No Motion          → Evaluate Timeout
+Timeout Reached           → Light OFF
+Bright Environment        → Light OFF
+
+Temperature ≥ 28°C        → Fan ON
+Temperature ≤ 27°C        → Fan OFF
+27°C < Temperature < 28°C → Maintain Previous State
+
+Security DISARMED         → Motion ignored by alarm subsystem
+Security ARMED + Motion   → Security LED + Buzzer → Alarm ON
+```
+
+---
+
+## 🖥️ OLED Status Display
+
+Live local view of temperature, humidity, LDR reading, motion status, light state/mode, fan state/mode, security state, and alarm state — giving immediate local feedback without requiring a computer or external dashboard.
+
+---
+
+## 📡 Serial Telemetry
+
+The Serial Monitor streams structured, human-readable telemetry for sensor readings, temperature, humidity, ambient-light value, motion state, light state, fan state, security state, alarm state, and operating modes — useful for debugging, functional verification, scenario testing, and monitoring control decisions during development.
+
+---
+
+## 🛠️ Technology Stack
+
+**Hardware / Embedded:** ESP32 DevKit · DHT22 · LDR · PIR · SSD1306 OLED · Room-Light LED · Fan LED · Security LED · Safe-Status LED · Buzzer · Push Buttons
+
+**Software:** C/C++ · Arduino framework · ESP32 GPIO · ADC · I2C · Serial Communication · Wokwi
+
+**Libraries:** Wire · Adafruit GFX Library · Adafruit SSD1306 · DHT sensor library
+
+---
+
+## ▶️ How to Run the Project
+
+### 1. Open the Project
+Open the project in Arduino IDE, or load the Wokwi simulation containing `sketch.ino`, `diagram.json`, and `libraries.txt`.
+
+### 2. Start the Simulation
+Click **▶ Start Simulation**. The system initializes the DHT22, PIR, LDR, OLED, LEDs, buzzer, and push buttons.
+
+### 3. Observe the Serial Monitor
+Streams temperature, humidity, LDR value, motion state, light/fan state and mode, security state, and alarm status in real time.
+
+### 4. Test the Sensors
+Vary temperature, humidity, LDR brightness, and PIR motion state to exercise the automation logic.
+
+### 5. Test Manual Controls
+Press the light button, fan button, and security button to verify override behaviour.
+
+### 6. Verify Security
+Arm the security system and trigger PIR motion to confirm the alarm activates as expected.
+
+### 7. Observe OLED and Serial Output
+Verify the displayed system state matches the current operating conditions.
+
+---
+
+## 📂 Repository Structure
 
 ```text
 Smart-Home-Controller-Embedded-System/
@@ -387,69 +448,18 @@ Smart-Home-Controller-Embedded-System/
 ├── Output/
 │   ├── 01_Normal-Idle-State.png
 │   ├── 02_Manual-Lighting-Motion.png
-│   ├── 03_Automatic-Fan-High-Temperature.png
-│   └── 04_Security-Alarm-Motion-Detected.png
+│   ├── 03-automatic-fan-high-temperature.png
+│   └── 04-security-alarm-motion-detected.png
 │
+├── sketch.ino
 ├── diagram.json
 ├── libraries.txt
-├── sketch.ino
 └── README.md
 ```
 
-| File / Folder | Description |
-|---|---|
-| `sketch.ino` | Complete ESP32 firmware |
-| `diagram.json` | Wokwi circuit and wiring definition |
-| `libraries.txt` | Required Arduino libraries |
-| `Output/` | Simulation output screenshots |
-| `README.md` | Complete project documentation |
-
 ---
 
-## ⚙️ Installation
-
-**Prerequisites:** Arduino IDE · ESP32 board package · required libraries below · a browser for Wokwi.
-
-```text
-Wire
-Adafruit GFX Library
-Adafruit SSD1306
-DHT sensor library
-```
-
-1. Install Arduino IDE and ESP32 board support.
-2. Install the required libraries listed above.
-3. Open `sketch.ino`.
-4. Select the correct ESP32 board and verify GPIO configuration.
-5. Compile and upload.
-
----
-
-## ▶️ How to Run
-
-1. Connect the ESP32 development board.
-2. Open `sketch.ino`, select the correct board and COM port.
-3. Compile and upload the firmware.
-4. Open the Serial Monitor at the configured baud rate.
-5. Observe sensor readings and live system state.
-
-```text
-Read Sensors → Process Inputs → Apply Control Logic
-   → Update Appliances → Update Security → Update OLED
-   → Send Serial Telemetry → Repeat
-```
-
----
-
-## 🖥️ Wokwi Simulation
-
-Simulated components: ESP32 DevKit · DHT22 · PIR · LDR · SSD1306 OLED · Light/Fan LEDs · Security/Safe LEDs · Buzzer · 3 push buttons.
-
-**Procedure:** load `diagram.json` → start simulation → vary temperature, light, and motion → exercise manual buttons → arm/disarm security → verify OLED/Serial output for each scenario → capture evidence.
-
----
-
-## 🧪 Test Scenarios
+## 🧪 Testing and Validation
 
 | Test ID | Scenario | Input / Condition | Expected Behaviour |
 |---|---|---|---|
@@ -468,50 +478,6 @@ Simulated components: ESP32 DevKit · DHT22 · PIR · LDR · SSD1306 OLED · Lig
 | T13 | Serial Monitoring | System operating | Telemetry displayed |
 | T14 | Combined Operation | Multiple conditions active | Automation and security operate together |
 
----
-
-## 📸 Screenshots
-
-Four core operating states, captured directly from the Wokwi simulator — code, live circuit, and Serial telemetry side by side.
-
-### 01 · Normal / Idle State
-Baseline readings, no motion, all actuators OFF, security disarmed and safe.
-
-![Normal Idle State](Output/01_Normal-Idle-State.png)
-
-**Demonstrates:** stable sensor readings · light & fan OFF · AUTO mode on both · security DISARMED · alarm SAFE.
-
----
-
-### 02 · Manual Lighting + Motion Detection
-Dark room with motion detected; light manually switched ON while fan stays in AUTO and OFF.
-
-![Manual Lighting and Motion](Output/02_Manual-Lighting-Motion.png)
-
-**Demonstrates:** dark-room + motion detection · manual light override · fan and security remain unaffected.
-
----
-
-### 03 · Automatic Fan — High Temperature
-Temperature climbs to 35°C; the fan switches ON automatically while lighting stays governed by AUTO/dark-room logic.
-
-![Automatic Fan High Temperature](Output/03_Automatic-Fan-High-Temperature.png)
-
-**Demonstrates:** threshold-based automatic fan activation · AUTO mode retained · security remains SAFE.
-
----
-
-### 04 · Security Alarm — Motion Detected While Armed
-Security armed, motion detected — alarm triggers instantly with LED + buzzer, running alongside active lighting/fan automation.
-
-![Security Alarm Motion Detected](Output/04_Security-Alarm-Motion-Detected.png)
-
-**Demonstrates:** independent security subsystem · real-time intrusion detection · simultaneous automation + security operation.
-
----
-
-## 📊 Test Results
-
 | Function | Result |
 |---|---|
 | DHT22 Temperature Monitoring | ✅ PASS |
@@ -529,18 +495,39 @@ Security armed, motion detected — alarm triggers instantly with LED + buzzer, 
 | Serial Telemetry | ✅ PASS |
 | Wokwi Functional Simulation | ✅ PASS |
 
-**14 / 14 test scenarios passed** across sensing, automation, manual control, and security domains.
+**14 / 14 test scenarios passed**, each documented with corresponding output evidence below.
+
+---
+
+## 📸 Output
+
+### Normal / Idle State
+![Normal Idle State](Output/01_Normal-Idle-State.png)
+`Light: OFF | Fan: OFF | Mode: AUTO | Security: DISARMED | Alarm: SAFE`
+
+### Manual Lighting + Motion Detection
+![Manual Lighting and Motion](Output/02_Manual-Lighting-Motion.png)
+`Room: DARK | Motion: DETECTED | Light: ON (Manual) | Fan: AUTO`
+
+### Automatic Fan — High Temperature
+![Automatic Fan High Temperature](Output/03-automatic-fan-high-temperature.png)
+`Temperature: 35.0°C | Fan: ON (Auto) | Security: DISARMED | Alarm: SAFE`
+
+### Security Alarm — Motion Detected While Armed
+![Security Alarm Motion Detected](Output/04-security-alarm-motion-detected.png)
+`Motion: DETECTED | Security: ARMED | Alarm: TRIGGERED`
 
 ---
 
 ## ⚠️ Known Limitations
 
-* Validated primarily through Wokwi simulation, not yet on physical hardware.
-* LEDs represent real appliances; physical deployment needs rated relay/SSR hardware and proper electrical isolation.
-* PIR detects motion but not individual identity.
-* LDR gives relative brightness, not calibrated lux.
-* No Wi-Fi, cloud sync, persistent logging, or dashboard yet — see roadmap below.
-* Current scope is single-room automation.
+* The system has been validated primarily through Wokwi simulation rather than physical hardware.
+* LEDs represent real appliances; physical deployment requires appropriately rated relay or SSR hardware and electrical isolation.
+* PIR detects motion but does not identify individual persons.
+* LDR provides relative brightness measurement rather than calibrated lux values.
+* No Wi-Fi, cloud synchronization, persistent logging, or remote dashboard is currently implemented.
+* Current implementation is focused on single-room automation.
+* Physical deployment would require additional electrical safety and appliance-control hardware.
 
 ---
 
@@ -548,56 +535,43 @@ Security armed, motion detected — alarm triggers instantly with LED + buzzer, 
 
 | Area | Planned Enhancements |
 |---|---|
-| 🌐 **IoT Connectivity** | Wi-Fi remote monitoring, MQTT, web + mobile dashboards, remote appliance control |
-| ⚡ **Energy Management** | Current/voltage sensing, per-appliance power monitoring, usage reports |
+| 🌐 **IoT Connectivity** | Wi-Fi remote monitoring, MQTT, web and mobile dashboards, remote appliance control |
+| ⚡ **Energy Management** | Current/voltage sensing, per-appliance power monitoring, energy usage reports |
 | 🔐 **Security** | Door/window sensors, additional PIR zones, remote alerts, timestamped event logs, camera verification |
-| ⚙️ **Firmware** | Non-volatile config storage, configurable thresholds, OTA updates, watchdog recovery |
+| ⚙️ **Firmware** | Non-volatile configuration storage, configurable thresholds, OTA updates, watchdog recovery |
 | 📱 **UI/UX** | Web dashboard, smartphone control, historical sensor trends |
-| 📈 **Scale** | Single Room → Multi-Room → Smart Building → IoT Building Management System |
+| 📈 **Scalability** | Single Room → Multi-Room → Smart Building → IoT Building Management System |
 
 ---
 
-## 🎓 Learning Outcomes
+## 💼 Skills Demonstrated
 
-Hands-on experience across: ESP32 programming · embedded C/C++ · sensor interfacing · GPIO/ADC/I2C · OLED programming · threshold & hysteresis-based automation · manual-override design · security event handling · finite-state management · timer-based control · Serial debugging · simulation-based system validation · technical documentation.
-
-```text
-Sensors + User Inputs + Microcontroller + Control Algorithms
-   + Actuators + Security Logic + User Feedback
-        ↓
-   Complete Embedded System
-```
+ESP32 firmware development · Embedded C/C++ · Arduino Framework · GPIO programming · ADC sensing · I2C communication · DHT22 interfacing · LDR sensing · PIR motion detection · OLED programming · threshold control · hysteresis · timer logic · manual override · priority arbitration · finite-state management · security systems · actuator control · buzzer control · Serial telemetry · Wokwi simulation · Serial debugging · Git/GitHub · technical documentation.
 
 ---
 
 ## 👤 Author
 
 **Subham Bhattacherjee**
-M.Tech, Computer Science & Engineering
-
-**Focus areas:** Embedded Systems · ESP32 · C/C++ · IoT · Sensor Interfacing · Automation · Firmware Development · Wokwi Simulation · Security Systems · Real-Time Monitoring
+**Project:** Smart Home Controller Embedded System
 
 ---
 
 ## 📜 License
 
-Licensed under the **MIT License** — free to use, modify, and distribute with attribution.
+Licensed under the **MIT License** — free to use, modify, and distribute for personal, academic, or commercial purposes, with attribution appreciated.
 
 ---
 
 ## ⭐ Project Summary
 
-An ESP32-based embedded automation and security prototype integrating environmental sensing, automatic lighting, hysteresis-based fan control, manual override, motion detection, independent security monitoring, OLED visualization, and Serial telemetry — fully designed and validated in Wokwi, and built as a foundation for IoT-enabled smart homes and buildings.
+* Built a **centralized ESP32 embedded automation and security system** integrating environmental sensing, motion-aware lighting, hysteresis-based fan control, manual override, and PIR-based intrusion detection.
+* Implemented **motion-aware automatic lighting** using combined ambient-light and PIR conditions.
+* Implemented **temperature-based fan control with a 27–28°C hysteresis dead-band** to prevent rapid ON/OFF switching.
+* Designed a **manual-override arbitration layer** that gives users priority over automatic control.
+* Built an **independent PIR-based security subsystem** with visual and audible alarm handling.
+* Used **I2C** for OLED communication and **ADC** for ambient-light sensing.
+* Structured for reproducibility: `sketch.ino`, `diagram.json`, `libraries.txt`, `Output/`, and a public Wokwi simulation link.
+* Validated against **14 documented test scenarios with a 100% pass rate**.
 
-**Highlights for recruiters:**
-
-* Built a complete **ESP32 embedded automation system** end-to-end: sensor input → control logic → actuator output.
-* Integrated **DHT22, LDR, PIR, OLED, LEDs, buzzer, and push buttons** into one coordinated firmware.
-* Implemented **motion-aware automatic lighting** and **temperature-based fan control with hysteresis**.
-* Designed a **manual-override arbitration layer** that lets users take priority over automation at any time.
-* Built an **independent PIR-based security subsystem** with visual + audible alarm handling.
-* Used **I2C** for OLED and **ADC** for ambient-light sensing.
-* Verified the system against **14 documented test scenarios — 100% pass rate**.
-* Delivered clean, reproducible project structure: `sketch.ino`, `diagram.json`, `libraries.txt`, `Output/`.
-
-> **Project Type:** Embedded Systems / IoT / Smart Home Automation &nbsp;·&nbsp; **Platform:** ESP32 &nbsp;·&nbsp; **Language:** Embedded C/C++ &nbsp;·&nbsp; **Simulation:** Wokwi
+> **Project Type:** Embedded Systems / IoT / Smart Home Automation & Security &nbsp;·&nbsp; **Platform:** ESP32 &nbsp;·&nbsp; **Language:** Embedded C/C++ &nbsp;·&nbsp; **Simulation:** Wokwi
