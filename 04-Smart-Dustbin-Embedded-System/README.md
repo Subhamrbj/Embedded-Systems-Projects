@@ -1,4 +1,4 @@
-# 🗑️ Smart Dustbin – Industry-Oriented Embedded System
+# 🗑️ Smart Dustbin — Touchless Waste Monitoring Embedded System
 
 ![Platform](https://img.shields.io/badge/platform-Arduino%20Uno-00979D?logo=arduino&logoColor=white)
 ![Simulation](https://img.shields.io/badge/simulated%20on-Wokwi-1DA1F2)
@@ -6,9 +6,24 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Status](https://img.shields.io/badge/status-Prototype-yellow)
 
-An Arduino-based **automatic waste bin controller** that opens its lid touch-free when a hand is detected, continuously monitors fill level with a second ultrasonic sensor, and raises a visual + audible alert once the bin crosses a configurable "full" threshold. Status is shown live on an I2C LCD and streamed over Serial for telemetry/logging.
+> An Arduino-based touchless waste bin controller that opens its lid automatically on hand detection, continuously tracks fill level with a second ultrasonic sensor, and escalates into a visual + audible alert past a configurable threshold — all running on a fully non-blocking control loop with zero `delay()` calls in the main path.
 
-**Live simulation:** https://wokwi.com/projects/472357743514021889
+**🔗 [Live Wokwi Simulation](https://wokwi.com/projects/472357743514021889) &nbsp;|&nbsp; 📄 [sketch.ino](#) &nbsp;|&nbsp; 🖼️ [Screenshots](#-screenshots)**
+
+---
+
+## 💼 Why This Project Matters
+
+The standout engineering decision in this project is architectural: the entire control loop is **non-blocking**, built entirely on `millis()`-based timing instead of `delay()`. That single choice is what lets two independent ultrasonic sensors, a servo, an LCD, dual LEDs, and a buzzer all update concurrently without ever stalling each other — exactly the discipline required in real embedded products, where a blocking call in one subsystem can freeze the whole device. On top of that, the fill-level calculation includes explicit clamping to reject out-of-range sensor noise, and the README documents real physical limitations (single-point sensing, no weight awareness) rather than glossing over them.
+
+**At a glance:**
+
+| | |
+|---|---|
+| 🎯 **Role demonstrated** | Embedded Firmware Engineer — sensor fusion & non-blocking control |
+| 🔧 **Core stack** | Arduino UNO · C/C++ · Dual Ultrasonic Sensing · I2C · PWM |
+| 🧪 **Validation** | 7 test cases including concurrency and fault handling — all passed |
+| 📦 **Deliverables** | Firmware, circuit definition, telemetry, documented test evidence |
 
 ---
 
@@ -19,8 +34,8 @@ An Arduino-based **automatic waste bin controller** that opens its lid touch-fre
 3. [Industry Relevance](#-industry-relevance)
 4. [Features](#-features)
 5. [Components Used](#-components-used)
-6. [Embedded Concepts Used](#-embedded-concepts-used)
-7. [Architecture](#️-architecture)
+6. [Embedded Concepts Applied](#-embedded-concepts-applied)
+7. [System Architecture](#️-system-architecture)
 8. [Circuit Connections](#-circuit-connections)
 9. [Folder Structure](#-folder-structure)
 10. [Installation](#️-installation)
@@ -30,80 +45,86 @@ An Arduino-based **automatic waste bin controller** that opens its lid touch-fre
 14. [Screenshots](#-screenshots)
 15. [Test Results](#-test-results)
 16. [Known Limitations](#️-known-limitations)
-17. [License](#-license)
-18. [Future Improvements](#-future-improvements)
-19. [Learning Outcomes](#-learning-outcomes)
-20. [Author](#-author)
+17. [Roadmap](#-roadmap)
+18. [Learning Outcomes](#-learning-outcomes)
+19. [Author](#-author)
+20. [License](#-license)
 
 ---
 
 ## 📖 Overview
 
-Public and industrial dustbins are usually opened by hand, which spreads germs and leads to bins overflowing unnoticed until someone manually checks them. This project solves both problems with a single low-cost embedded controller built around an Arduino Uno:
+Public and industrial dustbins are usually opened by hand — spreading germs — and overflow unnoticed until someone physically checks them. This project solves both problems with a single low-cost Arduino Uno controller:
 
-- A **hand-detection ultrasonic sensor** opens the lid automatically when an object/hand comes within range, and auto-closes it after a hold period.
-- A **second ultrasonic sensor** continuously measures how full the bin is and converts the distance reading into a 0–100% fill level.
-- An **LCD** shows lid state and fill percentage in real time.
-- **LEDs + a buzzer** escalate into a full-bin alert once the fill level crosses a set threshold, with a non-blocking blinking red LED and buzzer tone.
+* A **hand-detection ultrasonic sensor** opens the lid automatically when an object/hand comes within range, and auto-closes it after a hold period.
+* A **second ultrasonic sensor** continuously measures fill level and converts distance into a 0–100% fill percentage.
+* An **LCD** shows lid state and fill percentage live.
+* **LEDs + a buzzer** escalate into a full-bin alert once fill level crosses a configurable threshold — with non-blocking blinking and tone generation.
+
+---
 
 ## 🎯 Problem Statement
 
-Manually operated waste bins:
+Manually operated waste bins have three recurring problems:
+
 1. Require physical contact with the lid, spreading contamination.
 2. Give no indication of fill status until they visibly overflow.
 3. Rely on scheduled (rather than need-based) collection, wasting manpower and fuel.
 
-This project addresses all three with contactless operation and real-time fill monitoring, laying the groundwork for a networked "smart city" waste-collection system.
+This project addresses all three with contactless operation and real-time fill monitoring — laying the groundwork for a networked "smart city" waste-collection system.
+
+---
 
 ## 🏭 Industry Relevance
 
-This prototype demonstrates concepts directly applicable to:
-- **Smart City / Municipal Solid Waste Management** – need-based collection routing instead of fixed schedules.
-- **Touchless Public Infrastructure** – hygienic, contactless interaction points (elevators, dispensers, bins).
-- **Industrial IoT (IIoT) monitoring** – sensor fusion, threshold-based alerting, and Serial telemetry are the same patterns used in tank-level monitoring, silo monitoring, and predictive maintenance systems.
-- **Embedded Systems Engineering** – non-blocking state machines, sensor calibration, and debounced/filtered readings are core skills for firmware roles.
+| Domain | Application in this project |
+|---|---|
+| **Smart City / Municipal Waste Management** | Need-based collection routing instead of fixed schedules |
+| **Touchless Public Infrastructure** | Hygienic, contactless interaction points (elevators, dispensers, bins) |
+| **Industrial IoT (IIoT) Monitoring** | Same sensor-fusion + threshold-alerting pattern used in tank-level and silo monitoring |
+| **Embedded Systems Engineering** | Non-blocking state machines, sensor calibration, and filtered readings — core firmware skills |
+
+---
 
 ## ✨ Features
 
-- 🖐️ Touchless, automatic lid opening via ultrasonic hand detection
-- ⏱️ Auto-close after a configurable hold time (no lid left open indefinitely)
-- 📊 Real-time bin fill percentage (0–100%) from a second ultrasonic sensor
-- 🚨 Full-bin alert at a configurable threshold (default 85%)
-- 🟢🔴 Status LEDs — steady green for normal, blinking red for full
-- 🔊 Buzzer tone alert when the bin is full
-- 🖥️ 16×2 I2C LCD live status display (lid state + fill %)
-- 📡 Serial Monitor telemetry for every reading (distance, fill %, lid state, system status)
-- ⚙️ Fully non-blocking `loop()` — no `delay()` calls in the main control path, so all sensors and alerts update smoothly and simultaneously
+* 🖐️ Touchless, automatic lid opening via ultrasonic hand detection
+* ⏱️ Auto-close after a configurable hold time — no lid left open indefinitely
+* 📊 Real-time bin fill percentage (0–100%) from a dedicated second ultrasonic sensor
+* 🚨 Full-bin alert at a configurable threshold (default 85%)
+* 🟢🔴 Status LEDs — steady green for normal, blinking red for full
+* 🔊 Buzzer tone alert when the bin is full
+* 🖥️ 16×2 I2C LCD live status display (lid state + fill %)
+* 📡 Serial telemetry for every reading — distance, fill %, lid state, system status
+* ⚙️ **Fully non-blocking `loop()`** — zero `delay()` calls in the main control path, so every sensor and alert updates smoothly and simultaneously
+
+---
 
 ## 🔧 Components Used
 
-| Component | Quantity | Purpose |
-|---|---|---|
+| Component | Qty | Purpose |
+|---|---:|---|
 | Arduino Uno | 1 | Main microcontroller |
 | HC-SR04 Ultrasonic Sensor | 2 | Hand detection + bin level sensing |
 | SG90 Servo Motor | 1 | Lid actuation |
 | 16×2 I2C LCD (PCF8574, addr `0x27`) | 1 | Status display |
 | Buzzer | 1 | Audible full-bin alert |
-| LED – Green | 1 | Normal status indicator |
-| LED – Red | 1 | Full-bin alert indicator |
+| Green LED | 1 | Normal status indicator |
+| Red LED | 1 | Full-bin alert indicator |
 | 220 Ω Resistor | 2 | LED current limiting |
 | Jumper wires / breadboard | — | Wiring |
 
-## 🧠 Embedded Concepts Used
+---
 
-- **Ultrasonic ranging** — trigger/echo pulse timing with `pulseIn()` and speed-of-sound distance calculation
-- **Sensor fusion** — two independent HC-SR04 units driving two separate control loops
-- **Non-blocking timing** — `millis()`-based state machines for the lid auto-close, LED blink, and LCD refresh instead of `delay()`
-- **State machines** — lid open/closed state persisted across loop iterations with timeout-based transitions
-- **Signal conditioning** — `constrain()` and timeout handling to reject invalid/out-of-range echo readings
-- **Analog-to-percentage mapping** — `map()` used to convert a physical distance range into a 0–100% fill level
-- **I2C communication** — LCD driven over the two-wire I2C bus (`Wire.h`, `LiquidCrystal_I2C`)
-- **PWM actuation** — servo control via the `Servo` library
-- **Serial telemetry / debugging** — structured, human-readable status logging every update cycle
+## 🧠 Embedded Concepts Applied
 
-## 🏗️ Architecture
+`Ultrasonic Ranging (pulseIn)` · `Sensor Fusion — Two Independent Control Loops` · `Non-Blocking Timing (millis())` · `State Machines` · `Signal Conditioning & Clamping` · `Analog-to-Percentage Mapping (map())` · `I2C Communication` · `PWM Actuation` · `Serial Telemetry`
 
-```
+---
+
+## 🏗️ System Architecture
+
+```text
                 ┌───────────────────────────┐
                 │        Arduino Uno         │
                 │                           │
@@ -128,7 +149,13 @@ This prototype demonstrates concepts directly applicable to:
 ```
 
 **Control flow per loop iteration:**
-1. Read hand-distance sensor → 2. Read bin-level sensor → 3. Run lid logic → 4. Recalculate fill % → 5. Every 300 ms, refresh LCD/LEDs/buzzer/Serial log.
+
+```text
+Read hand sensor → Read bin-level sensor → Run lid logic
+   → Recalculate fill % → Every 300 ms: refresh LCD / LEDs / buzzer / Serial log
+```
+
+---
 
 ## 🔌 Circuit Connections
 
@@ -149,62 +176,68 @@ This prototype demonstrates concepts directly applicable to:
 | I2C LCD | SCL | A5 |
 | I2C LCD | VCC / GND | 5V / GND |
 
+---
+
 ## 📁 Folder Structure
 
-```
+```text
 04-Smart-Dustbin-Embedded-System/
 ├── Output/
 │   ├── 01_normal.png        # Empty bin, lid closed
-│   ├── 02_lid_open.png       # Hand detected, lid open
-│   ├── 03_partial_fill.png   # Bin at 74–77% fill
-│   └── 04_full_alert.png     # Bin at 100%, full alert active
-├── diagram.json               # Wokwi circuit/wiring definition
-├── libraries.txt               # Required library list
-├── sketch.ino                  # Main firmware source
+│   ├── 02_lid_open.png      # Hand detected, lid open
+│   ├── 03_partial_fill.png  # Bin at 74–77% fill
+│   └── 04_full_alert.png    # Bin at 100%, full alert active
+├── diagram.json              # Wokwi circuit/wiring definition
+├── libraries.txt              # Required library list
+├── sketch.ino                 # Main firmware source
 └── README.md
 ```
+
+---
 
 ## ⚙️ Installation
 
 1. Install the [Arduino IDE](https://www.arduino.cc/en/software) (or use Wokwi directly — no install needed).
-2. Install the required libraries via **Library Manager**:
-   - `LiquidCrystal I2C`
-   - `Servo` (bundled with Arduino IDE)
-3. Wire the circuit as described in [Circuit Connections](#-circuit-connections), or open `diagram.json` directly in [Wokwi](https://wokwi.com).
-4. Open `sketch.ino` in the Arduino IDE, select **Arduino Uno** as the board, and upload.
+2. Install the required libraries via **Library Manager**: `LiquidCrystal I2C` and `Servo` (bundled with Arduino IDE).
+3. Wire the circuit per [Circuit Connections](#-circuit-connections), or open `diagram.json` directly in [Wokwi](https://wokwi.com).
+4. Open `sketch.ino`, select **Arduino Uno**, and upload.
+
+---
 
 ## ▶️ Simulation Steps (Wokwi)
 
-1. Open the project: **https://wokwi.com/projects/472357743514021889**
-2. Click the green ▶️ **Start Simulation** button.
-3. Click on the **Hand HC-SR04** sensor's distance slider and set it below 15 cm to simulate a hand near the bin — the lid should open and the servo should rotate.
-4. Click on the **Bin HC-SR04** sensor's distance slider and lower it (closer to 3 cm) to simulate waste filling up — watch the LCD fill percentage rise.
-5. Push the bin-level distance to ≤ ~4.5 cm (≥ 85% fill) to trigger the full-bin alert — the red LED should blink and the buzzer should sound.
-6. Watch the **Serial Monitor** panel for live telemetry of every reading.
+1. Open the project: **[wokwi.com/projects/472357743514021889](https://wokwi.com/projects/472357743514021889)**
+2. Click ▶️ **Start Simulation**.
+3. Set the **Hand HC-SR04** distance slider below 15 cm to simulate a hand near the bin — the lid should open and the servo should rotate.
+4. Lower the **Bin HC-SR04** distance slider (closer to 3 cm) to simulate waste filling up — watch the LCD fill percentage rise.
+5. Push the bin-level distance to ≤ ~4.5 cm (≥ 85% fill) to trigger the full-bin alert — red LED blinks, buzzer sounds.
+6. Watch the **Serial Monitor** for live telemetry of every reading.
+
+---
 
 ## 🚀 How to Run
 
 **On real hardware:**
-1. Wire up the components as per the circuit table.
+1. Wire up the components per the circuit table.
 2. Upload `sketch.ino` via the Arduino IDE.
-3. Open the Serial Monitor at **115200 baud** to view live telemetry.
+3. Open the Serial Monitor at **115200 baud** for live telemetry.
 4. Wave a hand near the hand-detection sensor to open the lid; it auto-closes after 3 seconds.
-5. Watch the LCD and LEDs as the bin fill level changes.
+5. Watch the LCD and LEDs as fill level changes.
 
 **In simulation:** follow the [Simulation Steps](#️-simulation-steps-wokwi) above.
 
+---
+
 ## 📐 Bin-Level Formula
 
-The fill percentage is derived from the calibrated empty/full distances:
-
-```
+```text
 distanceRange   = BIN_EMPTY_DISTANCE_CM − BIN_FULL_DISTANCE_CM     (30 − 3 = 27 cm)
 filledDistance  = BIN_EMPTY_DISTANCE_CM − wasteDistanceCm
 fillPercentage  = map(filledDistance, 0, distanceRange, 0, 100)
 fillPercentage  = constrain(fillPercentage, 0, 100)
 ```
 
-In other words: the closer the measured echo distance is to `BIN_FULL_DISTANCE_CM` (3 cm), the higher the fill %; the closer it is to `BIN_EMPTY_DISTANCE_CM` (30 cm), the lower the fill %. Readings outside this physical range are clamped before the calculation runs, so noise or sensor glitches can't produce an invalid percentage.
+The closer the measured echo distance is to `BIN_FULL_DISTANCE_CM` (3 cm), the higher the fill %; the closer to `BIN_EMPTY_DISTANCE_CM` (30 cm), the lower. Readings outside this physical range are clamped **before** the calculation runs, so noise or sensor glitches can never produce an invalid percentage.
 
 | Constant | Value | Meaning |
 |---|---|---|
@@ -212,14 +245,27 @@ In other words: the closer the measured echo distance is to `BIN_FULL_DISTANCE_C
 | `BIN_FULL_DISTANCE_CM` | 3 cm | Sensor-to-waste distance when bin is full |
 | `FULL_THRESHOLD_PERCENT` | 85% | Fill % at which the full-bin alert triggers |
 
+---
+
 ## 📸 Screenshots
 
-| State | Description |
-|---|---|
-| ![Normal](Output/01_normal.png) | **Normal** — bin empty (0% fill), lid closed, green LED on |
-| ![Lid Open](Output/02_lid_open.png) | **Lid Open** — hand detected (9–10 cm), servo rotates lid open |
-| ![Partial Fill](Output/03_partial_fill.png) | **Partial Fill** — bin at ~74–77% fill, still within normal range |
-| ![Full Alert](Output/04_full_alert.png) | **Full Alert** — bin at 100% fill, red LED blinking, buzzer active, `STATUS:ALERT_BIN_FULL` on Serial |
+### Normal — Bin Empty
+![Normal](Output/01_normal.png)
+`0% fill · lid closed · green LED on`
+
+### Lid Open — Hand Detected
+![Lid Open](Output/02_lid_open.png)
+`Hand detected (9–10 cm) · servo rotates lid open`
+
+### Partial Fill
+![Partial Fill](Output/03_partial_fill.png)
+`~74–77% fill · still within normal range`
+
+### Full Alert
+![Full Alert](Output/04_full_alert.png)
+`100% fill · red LED blinking · buzzer active · STATUS:ALERT_BIN_FULL on Serial`
+
+---
 
 ## ✅ Test Results
 
@@ -233,42 +279,65 @@ In other words: the closer the measured echo distance is to `BIN_FULL_DISTANCE_C
 | Out-of-range echo | No echo / timeout | Reading clamped/defaulted, no crash or invalid % | ✅ Pass |
 | Concurrent operation | Hand + full bin simultaneously | Lid logic and alert logic run independently without blocking each other | ✅ Pass |
 
-*(Results captured from Wokwi simulation runs; see `Output/` screenshots for corresponding Serial telemetry.)*
+**7 / 7 test cases passed** — including fault-tolerance and true-concurrency scenarios, not just the straightforward path.
+
+---
 
 ## ⚠️ Known Limitations
 
-- **Single-point sensing**: the bin-level ultrasonic sensor takes one distance reading down the center of the bin, so unevenly piled or soft/absorbent waste (paper, fabric) can be under- or over-estimated compared to true volume.
-- **No weight awareness**: the system measures fill *height*, not mass — a bin full of light crumpled paper reads the same as one full of dense compacted waste.
-- **Ultrasonic blind zone**: HC-SR04 sensors have a minimum reliable sensing distance (~2 cm); waste piled higher than the `BIN_FULL_DISTANCE_CM` calibration point may not be distinguished further.
-- **No persistent storage**: fill history and alert logs are not saved anywhere — data only exists on the Serial Monitor for the current session.
-- **Single-bin scope**: the current design monitors one bin locally; it isn't yet networked for fleet-wide municipal monitoring (see Future Improvements).
-- **Environmental sensitivity**: ultrasonic readings can be affected by dust, moisture, or reflective surfaces inside real-world bins, more so than in simulation.
+* **Single-point sensing** — the bin-level sensor reads down the bin's center, so unevenly piled or soft/absorbent waste (paper, fabric) can be under- or over-estimated versus true volume.
+* **No weight awareness** — the system measures fill *height*, not mass; light crumpled paper reads the same as dense compacted waste.
+* **Ultrasonic blind zone** — HC-SR04 sensors have a minimum reliable sensing distance (~2 cm); waste piled higher than the `BIN_FULL_DISTANCE_CM` calibration point isn't distinguished further.
+* **No persistent storage** — fill history and alerts exist only on the Serial Monitor for the current session.
+* **Single-bin scope** — the current design isn't yet networked for fleet-wide municipal monitoring.
+* **Environmental sensitivity** — ultrasonic readings can be affected by dust, moisture, or reflective surfaces in real-world bins, more so than in simulation.
 
-## 📄 License
+---
 
-This project is licensed under the **MIT License** — free to use, modify, and distribute for personal, academic, or commercial purposes, with attribution appreciated.
+## 🚀 Roadmap
 
-## 🔮 Future Improvements
+| Area | Planned Enhancements |
+|---|---|
+| ☁️ **IoT Layer** | ESP32 + MQTT/HTTP to push fill-level data to a dashboard for route optimization |
+| ⚙️ **Calibration** | Auto-calibration routine run at first boot, replacing fixed constants |
+| 🔋 **Power** | Battery + solar charging for outdoor deployment, low-power sleep between readings |
+| ⚖️ **Sensing** | Add a weight sensor alongside ultrasonic ranging for more accurate fill estimation |
+| 🏷️ **Fleet Management** | RFID/GSM-based bin identification for municipal fleet tracking |
+| 🎛️ **Signal Quality** | Debounce/median filtering on ultrasonic readings to further reduce noise |
 
-- Add a **cloud/IoT layer** (ESP32 + MQTT or HTTP) to push fill-level data to a dashboard for route optimization.
-- Replace fixed calibration constants with an **auto-calibration routine** run at first boot.
-- Add a **battery + solar charging** circuit for outdoor deployment.
-- Introduce a **weight sensor** alongside ultrasonic ranging for more accurate fill estimation (accounts for compressible waste).
-- Add **RFID/GSM-based bin identification** for municipal fleet tracking.
-- Implement **debounce/median filtering** on ultrasonic readings to further reduce noise.
-- Add a **low-power sleep mode** between readings for battery-powered deployments.
+---
 
 ## 🎓 Learning Outcomes
 
-- Practical experience interfacing multiple ultrasonic sensors on a single microcontroller
-- Designing **non-blocking, multi-tasking firmware** using `millis()` instead of `delay()`
-- Sensor calibration and mapping physical measurements to meaningful application-level values
-- Driving I2C peripherals (LCD) alongside PWM (servo) and digital I/O (LEDs, buzzer) concurrently
-- Building and testing embedded systems entirely in simulation (Wokwi) before physical deployment
-- Structuring firmware with clear separation of concerns (sensing, control logic, alerting/display)
+Practical experience interfacing **multiple ultrasonic sensors** on one microcontroller · designing **non-blocking, multi-tasking firmware** using `millis()` instead of `delay()` · sensor calibration and mapping physical measurements to application-level values · driving I2C peripherals (LCD) alongside PWM (servo) and digital I/O (LEDs, buzzer) concurrently · building and testing embedded systems entirely in simulation before physical deployment · structuring firmware with clear separation of concerns (sensing, control logic, alerting/display).
+
+---
 
 ## 👤 Author
 
 **Subham Bhattacherjee**
+**Project:** Smart Dustbin — Touchless Waste Monitoring Embedded System
 **GitHub:** [View Repository](https://github.com/Subhamrbj/Embedded-Systems-Projects/tree/main/04-Smart-Dustbin-Embedded-System)
-**Simulation:** https://wokwi.com/projects/472357743514021889
+**Live Simulation:** [wokwi.com/projects/472357743514021889](https://wokwi.com/projects/472357743514021889)
+
+---
+
+## 📜 License
+
+Licensed under the **MIT License** — free to use, modify, and distribute for personal, academic, or commercial purposes, with attribution appreciated.
+
+---
+
+## ⭐ Project Summary
+
+**Highlights for recruiters:**
+
+* Built a **fully non-blocking, multi-sensor control loop** — zero `delay()` calls in the main path — coordinating two ultrasonic sensors, a servo, an LCD, dual LEDs, and a buzzer simultaneously.
+* Implemented **sensor fusion** across two independent HC-SR04 units driving two separate control loops (hand detection + fill monitoring).
+* Applied **signal conditioning and clamping** so out-of-range or noisy echo readings can never produce an invalid fill percentage.
+* Designed **timeout-based state transitions** for the auto-closing lid, avoiding both stuck-open and premature-close failure modes.
+* Delivered a real 0–100% fill-mapping formula from calibrated physical distances, not a placeholder.
+* Verified **7 test cases including concurrency and fault-injection scenarios** — not just the happy path.
+* Documented honest, specific **known limitations** (single-point sensing, no weight awareness) — the mark of an engineer who understands the deployment gap, not just the demo.
+
+> **Project Type:** Embedded Systems / IoT / Smart Waste Management &nbsp;·&nbsp; **Platform:** Arduino UNO &nbsp;·&nbsp; **Language:** Embedded C/C++ &nbsp;·&nbsp; **Simulation:** Wokwi
