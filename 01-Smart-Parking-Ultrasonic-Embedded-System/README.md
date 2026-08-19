@@ -15,7 +15,7 @@
 
 > An ESP32-based IoT smart-parking controller that monitors four slots via ultrasonic sensors, applies statistical filtering and debounced state stabilization, drives a servo-controlled entrance gate and buzzer alert, and exposes a live, auto-refreshing web dashboard over Wi-Fi — a compact model of the sensing-to-cloud pipeline used in real smart-facility systems.
 
-**🔗 [Live Wokwi Simulation](https://wokwi.com/projects/472127403112620033) &nbsp;|&nbsp; 📄 [sketch.ino](#) &nbsp;|&nbsp; 🖼️ [Screenshots](#-screenshots)**
+**📄 [sketch.ino](sketch.ino) &nbsp;|&nbsp; 🖼️ [Output](#-output)**
 
 ---
 
@@ -29,7 +29,7 @@ This project goes well beyond a single-sensor demo — it's a **multi-node sensi
 |---|---|
 | 🎯 **Role demonstrated** | IoT / Embedded Systems Engineer — sensing, control, and connectivity |
 | 🔧 **Core stack** | ESP32 · C/C++ · Wi-Fi · HTTP WebServer · I2C · Ultrasonic Sensing |
-| 🧪 **Validation** | 5 occupancy scenarios + explicit sensor-fault handling, all verified |
+| 🧪 **Validation** | 5 occupancy scenarios, each verified and documented with output evidence |
 | 📦 **Deliverables** | Firmware, circuit definition, live web dashboard, documented test evidence |
 
 ---
@@ -57,7 +57,7 @@ This project goes well beyond a single-sensor demo — it's a **multi-node sensi
 19. [How to Run](#️-how-to-run-the-project)
 20. [Repository Structure](#-repository-structure)
 21. [Testing and Validation](#-testing-and-validation)
-22. [Screenshots](#-screenshots)
+22. [Output](#-output)
 23. [Roadmap](#-roadmap)
 24. [Skills Demonstrated](#-skills-demonstrated)
 25. [Author](#-author)
@@ -396,13 +396,12 @@ Smart-Parking-Ultrasonic-Embedded-System/
 | Two Slots Occupied | 2 | 2 | OPEN | OFF |
 | Three Slots Occupied | 1 | 3 | OPEN | OFF |
 | Parking Full | 0 | 4 | CLOSED | ACTIVE |
-| Sensor Fault | — | — | Faulty slot excluded; Red LED ON, Green LED OFF | — |
 
-**6 / 6 scenarios verified**, including explicit fail-safe fault handling — not just the happy path.
+**5 / 5 occupancy scenarios verified**, each documented with corresponding output evidence below.
 
 ---
 
-## 📸 Screenshots
+## 📸 Output
 
 ### All Slots Free
 ![All Slots Free](Output/01_all_slots_free.png)
@@ -449,8 +448,6 @@ Embedded C/C++ · ESP32 programming · IoT system development · ultrasonic sens
 
 **Subham Bhattacherjee**
 **Project:** Smart Parking Ultrasonic Embedded System
-**GitHub:** [github.com/Subhamrbj/Smart-Parking-Ultrasonic-Embedded-System](https://github.com/Subhamrbj/Smart-Parking-Ultrasonic-Embedded-System)
-**Live Simulation:** [wokwi.com/projects/472127403112620033](https://wokwi.com/projects/472127403112620033)
 
 ---
 
@@ -462,14 +459,11 @@ Licensed under the **MIT License** — free to use, modify, and distribute for p
 
 ## ⭐ Project Summary
 
-**Highlights for recruiters:**
-
 * Built a **four-node IoT sensing system** on a single ESP32 with real-time occupancy classification.
 * Implemented **statistical outlier-rejection filtering** and **debounced, consecutive-decision state stabilization** to eliminate false transitions.
 * Designed **fail-safe fault handling** — a malfunctioning sensor is detected and excluded from availability counts rather than silently trusted.
 * Drove **physical actuation** (servo gate, buzzer) directly from computed system state.
 * Built and served a **live, auto-refreshing HTTP web dashboard** over Wi-Fi from the ESP32 itself.
-* Verified **6 distinct scenarios**, including edge-case sensor-fault handling, with documented evidence.
 * Structured for reproducibility: `sketch.ino`, `diagram.json`, `libraries.txt`, `Output/`, and a public Wokwi simulation link.
 
 > **Project Type:** IoT / Embedded Systems / Smart Infrastructure &nbsp;·&nbsp; **Platform:** ESP32 &nbsp;·&nbsp; **Language:** Embedded C/C++ &nbsp;·&nbsp; **Simulation:** Wokwi &nbsp;·&nbsp; **Connectivity:** Wi-Fi + HTTP
